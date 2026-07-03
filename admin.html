@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maple &amp; Main · Incoming Orders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --steel:#2B2B2E;
+    --steel-line:#3E3E42;
+    --chrome:#B9C1C7;
+    --cream:#FAF3E4;
+    --ink:#1C1B19;
+    --diner-red:#C8102E;
+    --mustard:#F2A93B;
+    --grill-green:#3F7A55;
+    --muted:#8E8B84;
+  }
+  html{background:var(--steel);}
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--steel);
+    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 40px);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  .checker{
+    height:6px;width:100%;
+    background-image:
+      linear-gradient(45deg, var(--ink) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--ink) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--ink) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--ink) 75%);
+    background-size:12px 12px;
+    background-color:var(--cream);
+    background-position:0 0, 0 6px, 6px -6px, -6px 0;
+  }
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 20px;border-bottom:1px solid var(--steel-line);
+  }
+  .brand{display:flex;flex-direction:column;line-height:1;}
+  .brand small{color:var(--mustard);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
+  .brand strong{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1.5px;}
+
+  .kitchen{padding:20px;background:var(--steel);}
+  .kitchen-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+  .kitchen-head h1{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;display:flex;align-items:center;gap:10px;margin:0;}
+  .wheel-icon{
+    width:26px;height:26px;border-radius:50%;flex:none;
+    background:conic-gradient(var(--mustard) 0 25%, var(--steel-line) 0 50%, var(--mustard) 0 75%, var(--steel-line) 0 100%);
+    border:2px solid var(--chrome);
+    animation:spin 12s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .wheel-icon{animation:none;} }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .refresh-note{color:var(--muted);font-size:11px;font-family:'Space Mono',monospace;}
+  .sound-toggle{
+    padding:7px 14px;border-radius:20px;border:1px solid var(--steel-line);
+    background:var(--steel-line);color:var(--cream);font-size:12px;font-weight:700;
+    cursor:pointer;letter-spacing:0.3px;
+  }
+  .sound-toggle.off{color:var(--muted);}
+
+  .columns{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  @media(max-width:1100px){.columns{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:600px){.columns{grid-template-columns:1fr;}}
+  .col-head{
+    display:flex;align-items:center;gap:8px;margin-bottom:10px;
+    font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;
+  }
+  .col-head .dot{width:8px;height:8px;border-radius:50%;background:currentColor;}
+  .col.pending .col-head{color:var(--diner-red);}
+  .col.confirmed .col-head{color:var(--chrome);}
+  .col.cooking .col-head{color:var(--mustard);}
+  .col.done .col-head{color:var(--grill-green);}
+
+  .ticket{
+    position:relative;background:var(--cream);color:var(--ink);border-radius:3px;
+    padding:16px 16px 18px;margin-bottom:18px;
+    box-shadow:0 6px 14px rgba(0,0,0,0.4);
+  }
+  .ticket.urgent{box-shadow:0 0 0 2px var(--diner-red), 0 6px 14px rgba(0,0,0,0.4);}
+  .ticket::before{
+    content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+    width:26px;height:12px;background:var(--chrome);border-radius:2px;
+    box-shadow:0 2px 4px rgba(0,0,0,0.5);
+  }
+  .ticket::after{
+    content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+    width:4px;height:10px;background:var(--steel);
+  }
+  .ticket.r1{transform:rotate(-1.3deg);}
+  .ticket.r2{transform:rotate(1.1deg);}
+  .ticket.r3{transform:rotate(-0.5deg);}
+  .ticket-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .ticket-num{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;}
+  .ticket-time{font-family:'Space Mono',monospace;font-size:11px;color:#8a7a52;}
+  .ticket-loc{font-size:12px;font-weight:700;color:var(--diner-red);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.5px;}
+  .ticket-name{font-size:12px;color:#6b5d38;margin-bottom:8px;}
+  .ticket-items{list-style:none;padding:0;margin:0 0 10px;}
+  .ticket-items li{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px dotted #cbbd94;}
+  .ticket-items .q{font-family:'Space Mono',monospace;color:#8a7a52;margin-right:6px;}
+  .ticket-note{font-size:12px;background:#fff;border:1px dashed #cbbd94;padding:6px 8px;border-radius:6px;margin-bottom:10px;color:#6b5d38;}
+  .ticket-total{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:10px;padding-top:4px;border-top:1px solid #cbbd94;}
+  .pickup-badge{
+    display:inline-flex;align-items:center;gap:6px;background:#EFE4CB;border:1px solid #cbbd94;
+    border-radius:6px;padding:6px 10px;font-size:13px;font-weight:700;margin-bottom:10px;color:#4b3f22;
+  }
+  .pickup-badge .clock{font-size:14px;}
+  .needs-time{
+    background:#FBE4E1;border:1px dashed var(--diner-red);border-radius:6px;padding:8px 10px;
+    font-size:11px;font-weight:700;color:var(--diner-red);text-transform:uppercase;letter-spacing:0.5px;
+    margin-bottom:10px;text-align:center;
+  }
+  .time-picks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+  .time-pick{
+    padding:6px 10px;border-radius:16px;border:1px solid #cbbd94;background:#fff;
+    font-size:12px;font-weight:700;cursor:pointer;color:#4b3f22;
+  }
+  .time-pick.selected{background:var(--mustard);border-color:var(--mustard);color:var(--ink);}
+  .custom-time-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .custom-time-row input[type="time"]{
+    flex:1;padding:8px;border-radius:6px;border:1px solid #cbbd94;font-family:'Inter',sans-serif;font-size:13px;
+  }
+  .ticket-actions{display:flex;gap:8px;}
+  .tk-btn{
+    flex:1;padding:9px;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;
+    text-transform:uppercase;letter-spacing:0.5px;
+  }
+  .tk-btn.confirm{background:var(--diner-red);color:#fff;}
+  .tk-btn.confirm:disabled{background:#cbbd94;color:#8a7a52;cursor:not-allowed;}
+  .tk-btn.start{background:var(--mustard);color:var(--ink);}
+  .tk-btn.finish{background:var(--grill-green);color:#fff;}
+  .tk-btn.archive{background:#ddd0aa;color:#5c4f2c;}
+  .col-empty{color:var(--muted);font-size:12px;padding:14px;border:1px dashed var(--steel-line);border-radius:8px;text-align:center;}
+  .badge-new{
+    position:absolute;top:8px;right:10px;background:var(--diner-red);color:#fff;
+    font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="checker"></div>
+<div class="topbar">
+  <div class="brand"><small id="brandTag">Est. on Main Street</small><strong id="brandName">MAPLE &amp; MAIN</strong></div>
+  <div style="font-size:11px;color:var(--muted);">Restaurant order screen — not visible to customers</div>
+</div>
+
+<div class="kitchen" id="kitchenView"></div>
+
+<script>
+let soundEnabled = true;
+let knownOrderIds = new Set();
+let firstLoad = true;
+let audioCtx = null;
+let pendingSelections = {}; // orderId -> {offsetMinutes, customTime}
+
+function ensureAudioCtx(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){}
+  }
+  return audioCtx;
+}
+
+function playAlert(){
+  if(!soundEnabled) return;
+  try{
+    const ctx = ensureAudioCtx();
+    if(ctx){
+      const now = ctx.currentTime;
+      [0, 0.18, 0.36].forEach((offset,i)=>{
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = i===1 ? 1046 : 880;
+        gain.gain.setValueAtTime(0.0001, now+offset);
+        gain.gain.exponentialRampToValueAtTime(0.35, now+offset+0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now+offset+0.16);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(now+offset); osc.stop(now+offset+0.18);
+      });
+    }
+  }catch(e){ console.warn('alert sound failed', e); }
+  if(navigator.vibrate){ navigator.vibrate([200,80,200,80,200]); }
+}
+
+async function loadOrders(){
+  try{
+    const res = await fetch('/api/orders');
+    if(!res.ok) return [];
+    return await res.json();
+  }catch(e){ return []; }
+}
+
+function timeAgo(ts){
+  const mins = Math.max(0, Math.floor((Date.now()-ts)/60000));
+  return mins===0 ? 'just now' : mins+' min ago';
+}
+
+function formatClock(date){
+  return date.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+}
+
+function computePickupLabel(sel){
+  if(!sel) return null;
+  if(sel.customTime){
+    const [h,m] = sel.customTime.split(':').map(Number);
+    const d = new Date(); d.setHours(h,m,0,0);
+    return formatClock(d);
+  }
+  if(sel.offsetMinutes){
+    return formatClock(new Date(Date.now()+sel.offsetMinutes*60000));
+  }
+  return null;
+}
+
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const QUICK_MINUTES = [10,15,20,30,45,60];
+
+async function renderKitchen(){
+  const el = document.getElementById('kitchenView');
+  const list = await loadOrders();
+
+  const currentIds = new Set(list.map(o=>o.id));
+  if(!firstLoad){
+    const hasNew = list.some(o=>!knownOrderIds.has(o.id));
+    if(hasNew) playAlert();
+  }
+  knownOrderIds = currentIds;
+  firstLoad = false;
+
+  const groups = {pending:[], confirmed:[], cooking:[], done:[]};
+  list.slice().sort((a,b)=>b.createdAt-a.createdAt).forEach(o=>{
+    (groups[o.status]||groups.pending).push(o);
+  });
+  const colDefs = [
+    {key:'pending', label:'New — Needs Time', empty:'No new orders', rot:'r1'},
+    {key:'confirmed', label:'Confirmed', empty:'Nothing waiting', rot:'r2'},
+    {key:'cooking', label:'Cooking', empty:'Nothing cooking', rot:'r3'},
+    {key:'done', label:'Ready', empty:'Nothing ready', rot:'r1'},
+  ];
+
+  let html = `
+    <div class="kitchen-head">
+      <h1><span class="wheel-icon"></span>Incoming Orders</h1>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="sound-toggle" id="soundToggle"></button>
+        <div class="refresh-note" id="lastRefresh"></div>
+      </div>
+    </div>
+    <div class="columns">`;
+
+  colDefs.forEach(col=>{
+    html += `<div class="col ${col.key}"><div class="col-head"><span class="dot"></span>${col.label} (${groups[col.key].length})</div>`;
+    if(groups[col.key].length===0){
+      html += `<div class="col-empty">${col.empty}</div>`;
+    } else {
+      groups[col.key].forEach(o=>{
+        const isFresh = col.key==='pending' && (Date.now()-o.createdAt < 60000);
+        const itemsHtml = o.items.map(it=>`<li><span><span class="q">×${it.qty}</span>${escapeHtml(it.name)}</span><span>$${it.price*it.qty}</span></li>`).join('');
+        const noteHtml = o.note ? `<div class="ticket-note">Note: ${escapeHtml(o.note)}</div>` : '';
+        const nameHtml = o.name ? `<div class="ticket-name">${escapeHtml(o.name)}</div>` : '';
+
+        let bodyHtml = '';
+        if(col.key === 'pending'){
+          const sel = pendingSelections[o.id] || {};
+          const preview = computePickupLabel(sel);
+          bodyHtml = `
+            <div class="needs-time">⏱ Set a pickup time to confirm</div>
+            <div class="time-picks">
+              ${QUICK_MINUTES.map(m=>`<div class="time-pick ${sel.offsetMinutes===m?'selected':''}" data-id="${o.id}" data-mins="${m}">+${m} min</div>`).join('')}
+            </div>
+            <div class="custom-time-row">
+              <input type="time" data-id="${o.id}" class="custom-time-input" value="${sel.customTime||''}">
+            </div>
+            <div class="ticket-actions">
+              <button class="tk-btn confirm" data-id="${o.id}" ${preview?'':'disabled'}>${preview? 'Confirm '+preview : 'Pick a time'}</button>
+            </div>`;
+        } else {
+          const badge = o.pickupTime ? `<div class="pickup-badge"><span class="clock">⏱</span>Pickup ${o.pickupTime}</div>` : '';
+          let actionHtml = '';
+          if(col.key==='confirmed') actionHtml = `<button class="tk-btn start" data-id="${o.id}" data-next="cooking">Start Cooking</button>`;
+          if(col.key==='cooking') actionHtml = `<button class="tk-btn finish" data-id="${o.id}" data-next="done">Mark Ready</button>`;
+          if(col.key==='done') actionHtml = `<button class="tk-btn archive" data-id="${o.id}" data-next="archived">Archive</button>`;
+          bodyHtml = `${badge}<div class="ticket-actions">${actionHtml}</div>`;
+        }
+
+        html += `<div class="ticket ${col.rot} ${col.key==='pending'?'urgent':''}">
+          ${isFresh?'<div class="badge-new">NEW</div>':''}
+          <div class="ticket-top">
+            <div class="ticket-num">#${o.num}</div>
+            <div class="ticket-time">${timeAgo(o.createdAt)}</div>
+          </div>
+          <div class="ticket-loc">${escapeHtml(o.location)}</div>
+          ${nameHtml}
+          <ul class="ticket-items">${itemsHtml}</ul>
+          ${noteHtml}
+          <div class="ticket-total"><span>Total (pay in store)</span><span>$${o.total}</span></div>
+          ${bodyHtml}
+        </div>`;
+      });
+    }
+    html += `</div>`;
+  });
+  html += `</div>`;
+  el.innerHTML = html;
+  document.getElementById('lastRefresh').textContent = 'Last refreshed '+new Date().toLocaleTimeString('en-US');
+
+  const soundBtn = document.getElementById('soundToggle');
+  soundBtn.textContent = soundEnabled ? '🔔 Sound On' : '🔕 Sound Off';
+  soundBtn.classList.toggle('off', !soundEnabled);
+  soundBtn.onclick = ()=>{
+    soundEnabled = !soundEnabled;
+    if(soundEnabled){ ensureAudioCtx(); playAlert(); }
+    renderKitchen();
+  };
+
+  // quick time pick buttons
+  el.querySelectorAll('.time-pick').forEach(btn=>{
+    btn.onclick = ()=>{
+      const id = btn.dataset.id, mins = Number(btn.dataset.mins);
+      pendingSelections[id] = {offsetMinutes:mins, customTime:null};
+      renderKitchen();
+    };
+  });
+  // custom time input
+  el.querySelectorAll('.custom-time-input').forEach(inp=>{
+    inp.onchange = ()=>{
+      const id = inp.dataset.id;
+      pendingSelections[id] = {offsetMinutes:null, customTime:inp.value};
+      renderKitchen();
+    };
+  });
+  // confirm pickup time -> sends time to customer
+  el.querySelectorAll('.tk-btn.confirm').forEach(btn=>{
+    btn.onclick = async ()=>{
+      if(btn.disabled) return;
+      const id = btn.dataset.id;
+      const sel = pendingSelections[id];
+      const label = computePickupLabel(sel);
+      if(!label) return;
+      try{
+        await fetch('/api/orders/'+id, {
+          method:'PATCH',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({status:'confirmed', pickupTime:label, confirmedAt: Date.now()})
+        });
+        delete pendingSelections[id];
+        renderKitchen();
+      }catch(e){ console.error(e); }
+    };
+  });
+  // start / finish / archive
+  el.querySelectorAll('.tk-btn.start, .tk-btn.finish, .tk-btn.archive').forEach(btn=>{
+    btn.onclick = async ()=>{
+      const id = btn.dataset.id, next = btn.dataset.next;
+      try{
+        if(next==='archived'){
+          await fetch('/api/orders/'+id, {method:'DELETE'});
+        } else {
+          await fetch('/api/orders/'+id, {
+            method:'PATCH',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({status:next})
+          });
+        }
+        renderKitchen();
+      }catch(e){ console.error(e); }
+    };
+  });
+}
+
+async function loadSiteInfo(){
+  try{
+    const res = await fetch('/api/config');
+    if(res.ok){
+      const cfg = await res.json();
+      if(cfg.siteInfo){
+        document.getElementById('brandName').textContent = cfg.siteInfo.name || 'MAPLE & MAIN';
+        document.getElementById('brandTag').textContent = cfg.siteInfo.tagline || '';
+      }
+    }
+  }catch(e){}
+}
+
+ensureAudioCtx();
+loadSiteInfo();
+renderKitchen();
+setInterval(renderKitchen, 3000);
+setInterval(loadSiteInfo, 20000);
+</script>
+</body>
+</html>

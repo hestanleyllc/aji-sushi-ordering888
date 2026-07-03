@@ -1,0 +1,15 @@
+{
+  "name": "maple-and-main",
+  "version": "1.0.0",
+  "description": "Maple & Main online ordering + restaurant order screen + admin",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

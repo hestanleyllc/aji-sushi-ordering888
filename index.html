@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maple &amp; Main · Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --steel:#2B2B2E; --steel-line:#3E3E42; --chrome:#B9C1C7;
+    --cream:#FAF3E4; --ink:#1C1B19; --diner-red:#C8102E;
+    --mustard:#F2A93B; --grill-green:#3F7A55; --muted:#8E8B84;
+  }
+  html{background:var(--steel);}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--steel);color:var(--cream);font-family:'Inter',sans-serif;min-height:100vh;}
+  .checker{
+    height:6px;width:100%;
+    background-image:linear-gradient(45deg, var(--ink) 25%, transparent 25%),linear-gradient(-45deg, var(--ink) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--ink) 75%),linear-gradient(-45deg, transparent 75%, var(--ink) 75%);
+    background-size:12px 12px;background-color:var(--cream);
+    background-position:0 0, 0 6px, 6px -6px, -6px 0;
+  }
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--steel-line);}
+  .brand{display:flex;flex-direction:column;line-height:1;}
+  .brand small{color:var(--mustard);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
+  .brand strong{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1.5px;}
+  .warn{font-size:11px;color:var(--muted);}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 100px;background:var(--steel);}
+  h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--mustard);margin:26px 0 12px;display:flex;align-items:center;gap:10px;}
+  h2::after{content:'';flex:1;height:1px;background:var(--steel-line);}
+  .card{background:var(--cream);color:var(--ink);border-radius:10px;padding:16px;margin-bottom:14px;}
+  .field{margin-bottom:12px;}
+  .field label{font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#7a6c46;}
+  .field input, .field textarea{
+    width:100%;margin-top:5px;padding:9px;border-radius:6px;border:1px solid #cbbd94;
+    background:#fff;font-family:'Inter',sans-serif;font-size:14px;
+  }
+  .cat-card{background:#343330;border:1px solid var(--steel-line);border-radius:10px;padding:14px;margin-bottom:16px;}
+  .cat-title-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
+  .cat-title-row input{
+    flex:1;padding:9px;border-radius:6px;border:1px solid var(--steel-line);background:var(--steel);
+    color:var(--cream);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.5px;
+  }
+  .icon-btn{
+    padding:8px 12px;border-radius:6px;border:none;font-size:11px;font-weight:700;cursor:pointer;
+    text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;
+  }
+  .icon-btn.del{background:#5c2b28;color:#ffb4ac;}
+  .dish-row{
+    display:grid;grid-template-columns:1.3fr 1.6fr 80px auto auto;gap:8px;align-items:center;
+    background:var(--cream);border-radius:8px;padding:8px;margin-bottom:8px;
+  }
+  @media(max-width:640px){ .dish-row{grid-template-columns:1fr 1fr;} }
+  .dish-row input[type="text"], .dish-row input[type="number"]{
+    padding:8px;border-radius:6px;border:1px solid #cbbd94;background:#fff;color:var(--ink);font-size:13px;
+  }
+  .sold-toggle{display:flex;align-items:center;gap:6px;font-size:11px;color:#6b5d38;white-space:nowrap;}
+  .add-dish-btn{
+    width:100%;padding:9px;border-radius:6px;border:1px dashed var(--chrome);background:transparent;
+    color:var(--chrome);font-size:12px;font-weight:700;cursor:pointer;margin-top:4px;
+  }
+  .add-cat-btn{
+    width:100%;padding:12px;border-radius:8px;border:1px dashed var(--mustard);background:transparent;
+    color:var(--mustard);font-size:13px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;
+  }
+  .save-bar{
+    position:fixed;left:0;right:0;bottom:0;background:var(--steel);border-top:1px solid var(--steel-line);
+    padding:12px 20px;display:flex;justify-content:flex-end;align-items:center;gap:12px;z-index:20;
+  }
+  .save-btn{
+    padding:12px 24px;border:none;border-radius:8px;background:var(--diner-red);color:#fff;
+    font-weight:700;font-size:14px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;
+  }
+  .saved-note{font-size:12px;color:var(--grill-green);font-weight:700;opacity:0;transition:opacity .2s;}
+  .saved-note.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="checker"></div>
+<div class="topbar">
+  <div class="brand"><small>Admin</small><strong>MAPLE &amp; MAIN</strong></div>
+  <div class="warn">Changes appear on the ordering site within ~20 seconds</div>
+</div>
+
+<div class="wrap">
+  <h2>Site Info</h2>
+  <div class="card" id="siteCard"></div>
+
+  <h2>Menu</h2>
+  <div id="menuList"></div>
+  <button class="add-cat-btn" id="addCatBtn">+ Add Category</button>
+</div>
+
+<div class="save-bar">
+  <span class="saved-note" id="savedNote">Saved ✓</span>
+  <button class="save-btn" id="saveBtn">Save Changes</button>
+</div>
+
+<script>
+const DEFAULT_SITE = {
+  name: 'MAPLE & MAIN',
+  tagline: 'Est. on Main Street',
+  payNote: 'No online payment — please pay at the counter or with your server.'
+};
+const DEFAULT_MENU = [
+  {cat:'Griddle & Eggs', items:[
+    {id:'d1', name:'Buttermilk Pancake Stack', desc:'Three tall stack, warm maple syrup', price:11, emoji:'🥞', soldOut:false},
+    {id:'d2', name:'The Main Street Skillet', desc:'Eggs, hash browns, cheddar, peppers', price:13, emoji:'🍳', soldOut:false},
+  ]},
+  {cat:'From the Grill', items:[
+    {id:'d3', name:'Bacon Cheeseburger', desc:'Half-pound patty, smoked bacon, fries', price:15, emoji:'🍔', soldOut:false},
+    {id:'d4', name:'BBQ Pulled Pork Sandwich', desc:'Slow-smoked, house slaw, brioche bun', price:14, emoji:'🥪', soldOut:false},
+    {id:'d5', name:'Baked Mac & Cheese', desc:'Three-cheese blend, toasted crumb topping', price:12, emoji:'🧀', soldOut:false},
+  ]},
+  {cat:'Fountain & Sides', items:[
+    {id:'d6', name:'Hand-Spun Milkshake', desc:'Vanilla, chocolate, or strawberry', price:7, emoji:'🥤', soldOut:false},
+    {id:'d7', name:'Sweet Tea', desc:'Southern-style, brewed daily', price:3, emoji:'🧊', soldOut:false},
+    {id:'d8', name:'Slice of Apple Pie', desc:'Warm, with a scoop of vanilla', price:6, emoji:'🥧', soldOut:false},
+  ]},
+];
+
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+let state = { siteInfo: {...DEFAULT_SITE}, menu: JSON.parse(JSON.stringify(DEFAULT_MENU)) };
+
+function uid(){ return 'd_' + Date.now() + '_' + Math.floor(Math.random()*10000); }
+
+async function loadConfig(){
+  try{
+    const res = await fetch('/api/config');
+    if(res.ok){
+      const cfg = await res.json();
+      if(cfg.siteInfo) state.siteInfo = cfg.siteInfo;
+      if(cfg.menu && cfg.menu.length) state.menu = cfg.menu;
+    }
+  }catch(e){}
+  renderSite();
+  renderMenu();
+}
+
+function renderSite(){
+  const el = document.getElementById('siteCard');
+  el.innerHTML = `
+    <div class="field"><label>Restaurant Name</label><input id="siteName" value="${escapeHtml(state.siteInfo.name)}"></div>
+    <div class="field"><label>Tagline</label><input id="siteTagline" value="${escapeHtml(state.siteInfo.tagline)}"></div>
+    <div class="field"><label>Payment Note (shown to customers)</label><textarea id="sitePayNote" rows="2">${escapeHtml(state.siteInfo.payNote)}</textarea></div>
+  `;
+  document.getElementById('siteName').oninput = (e)=>{ state.siteInfo.name = e.target.value; };
+  document.getElementById('siteTagline').oninput = (e)=>{ state.siteInfo.tagline = e.target.value; };
+  document.getElementById('sitePayNote').oninput = (e)=>{ state.siteInfo.payNote = e.target.value; };
+}
+
+function renderMenu(){
+  const el = document.getElementById('menuList');
+  let html = '';
+  state.menu.forEach((sec, ci)=>{
+    html += `<div class="cat-card">
+      <div class="cat-title-row">
+        <input type="text" class="cat-name" data-ci="${ci}" value="${escapeHtml(sec.cat)}">
+        <button class="icon-btn del" data-act="delCat" data-ci="${ci}">Delete Category</button>
+      </div>`;
+    sec.items.forEach((it, di)=>{
+      html += `
+        <div class="dish-row">
+          <input type="text" data-ci="${ci}" data-di="${di}" data-field="name" value="${escapeHtml(it.name)}" placeholder="Dish name">
+          <input type="text" data-ci="${ci}" data-di="${di}" data-field="desc" value="${escapeHtml(it.desc)}" placeholder="Description">
+          <input type="number" data-ci="${ci}" data-di="${di}" data-field="price" value="${it.price}" min="0" step="0.5">
+          <label class="sold-toggle"><input type="checkbox" data-ci="${ci}" data-di="${di}" data-field="soldOut" ${it.soldOut?'checked':''}> Sold out</label>
+          <button class="icon-btn del" data-act="delDish" data-ci="${ci}" data-di="${di}">Delete</button>
+        </div>`;
+    });
+    html += `<button class="add-dish-btn" data-act="addDish" data-ci="${ci}">+ Add Dish to ${sec.cat}</button></div>`;
+  });
+  el.innerHTML = html;
+  bindMenuEvents();
+}
+
+function bindMenuEvents(){
+  document.querySelectorAll('.cat-name').forEach(inp=>{
+    inp.oninput = ()=>{ state.menu[inp.dataset.ci].cat = inp.value; };
+  });
+  document.querySelectorAll('.dish-row input[type="text"], .dish-row input[type="number"]').forEach(inp=>{
+    inp.oninput = ()=>{
+      const ci = inp.dataset.ci, di = inp.dataset.di, field = inp.dataset.field;
+      const val = field==='price' ? Number(inp.value)||0 : inp.value;
+      state.menu[ci].items[di][field] = val;
+    };
+  });
+  document.querySelectorAll('.dish-row input[type="checkbox"]').forEach(inp=>{
+    inp.onchange = ()=>{
+      const ci = inp.dataset.ci, di = inp.dataset.di;
+      state.menu[ci].items[di].soldOut = inp.checked;
+    };
+  });
+  document.querySelectorAll('[data-act="delDish"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      state.menu[btn.dataset.ci].items.splice(btn.dataset.di,1);
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="addDish"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      state.menu[btn.dataset.ci].items.push({id:uid(), name:'New Dish', desc:'', price:0, soldOut:false});
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="delCat"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      if(state.menu.length<=1){ alert('Keep at least one category.'); return; }
+      state.menu.splice(btn.dataset.ci,1);
+      renderMenu();
+    };
+  });
+}
+
+document.getElementById('addCatBtn').onclick = ()=>{
+  state.menu.push({cat:'New Category', items:[]});
+  renderMenu();
+};
+
+document.getElementById('saveBtn').onclick = async ()=>{
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try{
+    const res = await fetch('/api/config', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(state)
+    });
+    if(!res.ok) throw new Error('save failed');
+    const note = document.getElementById('savedNote');
+    note.classList.add('show');
+    setTimeout(()=>note.classList.remove('show'), 2000);
+  }catch(e){
+    alert('Save failed — please try again.');
+    console.error(e);
+  }
+  btn.disabled = false; btn.textContent = 'Save Changes';
+};
+
+loadConfig();
+</script>
+</body>
+</html>
