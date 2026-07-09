@@ -3,400 +3,3068 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maple &amp; Main · Incoming Orders</title>
+<title>Maple &amp; Main · Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --steel:#2B2B2E;
-    --steel-line:#3E3E42;
-    --chrome:#B9C1C7;
-    --cream:#FAF3E4;
-    --ink:#1C1B19;
-    --diner-red:#C8102E;
-    --mustard:#F2A93B;
-    --grill-green:#3F7A55;
-    --muted:#8E8B84;
+    --steel:#2B2B2E; --steel-line:#3E3E42; --chrome:#B9C1C7;
+    --cream:#FAF3E4; --ink:#1C1B19; --diner-red:#C8102E;
+    --mustard:#F2A93B; --grill-green:#3F7A55; --muted:#8E8B84;
   }
   html{background:var(--steel);}
   *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--steel);
-    background-image:repeating-linear-gradient(115deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 40px);
-    color:var(--cream);
-    font-family:'Inter',sans-serif;
-    min-height:100vh;
-  }
+  body{margin:0;background:var(--steel);color:var(--cream);font-family:'Inter',sans-serif;min-height:100vh;}
   .checker{
     height:6px;width:100%;
-    background-image:
-      linear-gradient(45deg, var(--ink) 25%, transparent 25%),
-      linear-gradient(-45deg, var(--ink) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, var(--ink) 75%),
-      linear-gradient(-45deg, transparent 75%, var(--ink) 75%);
-    background-size:12px 12px;
-    background-color:var(--cream);
+    background-image:linear-gradient(45deg, var(--ink) 25%, transparent 25%),linear-gradient(-45deg, var(--ink) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--ink) 75%),linear-gradient(-45deg, transparent 75%, var(--ink) 75%);
+    background-size:12px 12px;background-color:var(--cream);
     background-position:0 0, 0 6px, 6px -6px, -6px 0;
   }
-  .topbar{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:16px 20px;border-bottom:1px solid var(--steel-line);
-  }
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--steel-line);}
   .brand{display:flex;flex-direction:column;line-height:1;}
   .brand small{color:var(--mustard);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;}
-  .brand strong{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1.5px;}
-
-  .kitchen{padding:20px;background:var(--steel);}
-  .kitchen-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
-  .kitchen-head h1{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;display:flex;align-items:center;gap:10px;margin:0;}
-  .wheel-icon{
-    width:26px;height:26px;border-radius:50%;flex:none;
-    background:conic-gradient(var(--mustard) 0 25%, var(--steel-line) 0 50%, var(--mustard) 0 75%, var(--steel-line) 0 100%);
-    border:2px solid var(--chrome);
-    animation:spin 12s linear infinite;
+  .brand strong{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1.5px;}
+  .warn{font-size:11px;color:var(--muted);}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 100px;background:var(--steel);}
+  h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--mustard);margin:26px 0 12px;display:flex;align-items:center;gap:10px;}
+  h2::after{content:'';flex:1;height:1px;background:var(--steel-line);}
+  .card{background:var(--cream);color:var(--ink);border-radius:10px;padding:16px;margin-bottom:14px;}
+  .field{margin-bottom:12px;}
+  .field label{font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#7a6c46;}
+  .field input, .field textarea{
+    width:100%;margin-top:5px;padding:9px;border-radius:6px;border:1px solid #cbbd94;
+    background:#fff;font-family:'Inter',sans-serif;font-size:14px;
   }
-  @media (prefers-reduced-motion: reduce){ .wheel-icon{animation:none;} }
-  @keyframes spin{ to{ transform:rotate(360deg); } }
-  .refresh-note{color:var(--muted);font-size:11px;font-family:'Space Mono',monospace;}
-  .sound-toggle{
-    padding:7px 14px;border-radius:20px;border:1px solid var(--steel-line);
-    background:var(--steel-line);color:var(--cream);font-size:12px;font-weight:700;
-    cursor:pointer;letter-spacing:0.3px;
+  .cat-card{background:#343330;border:1px solid var(--steel-line);border-radius:10px;padding:14px;margin-bottom:16px;}
+  .cat-title-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
+  .cat-title-row input{
+    flex:1;padding:9px;border-radius:6px;border:1px solid var(--steel-line);background:var(--steel);
+    color:var(--cream);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.5px;
   }
-  .sound-toggle.off{color:var(--muted);}
-
-  .columns{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
-  @media(max-width:1100px){.columns{grid-template-columns:repeat(2,1fr);}}
-  @media(max-width:600px){.columns{grid-template-columns:1fr;}}
-  .col-head{
-    display:flex;align-items:center;gap:8px;margin-bottom:10px;
-    font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;
+  .icon-btn{
+    padding:8px 12px;border-radius:6px;border:none;font-size:11px;font-weight:700;cursor:pointer;
+    text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;
   }
-  .col-head .dot{width:8px;height:8px;border-radius:50%;background:currentColor;}
-  .col.pending .col-head{color:var(--diner-red);}
-  .col.confirmed .col-head{color:var(--chrome);}
-  .col.cooking .col-head{color:var(--mustard);}
-  .col.done .col-head{color:var(--grill-green);}
-
-  .ticket{
-    position:relative;background:var(--cream);color:var(--ink);border-radius:3px;
-    padding:16px 16px 18px;margin-bottom:18px;
-    box-shadow:0 6px 14px rgba(0,0,0,0.4);
+  .icon-btn.del{background:#5c2b28;color:#ffb4ac;}
+  .dish-row{
+    display:grid;grid-template-columns:auto 1.3fr 1.6fr 80px auto auto auto auto auto;gap:8px;align-items:center;
+    background:var(--cream);border-radius:8px;padding:8px;margin-bottom:8px;cursor:grab;
   }
-  .ticket.urgent{box-shadow:0 0 0 2px var(--diner-red), 0 6px 14px rgba(0,0,0,0.4);}
-  .ticket::before{
-    content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%);
-    width:26px;height:12px;background:var(--chrome);border-radius:2px;
-    box-shadow:0 2px 4px rgba(0,0,0,0.5);
+  .dish-row.dragging{opacity:0.35;}
+  .drag-handle{cursor:grab;font-size:16px;color:#8a7a52;padding:0 2px;user-select:none;}
+  .cat-drag-handle{font-size:20px;color:var(--mustard);padding:0 6px;}
+  .drag-hint{font-size:11px;color:#8a7a52;margin-bottom:10px;font-style:italic;}
+  .cat-card{transition:background 0.15s, box-shadow 0.15s;}
+  .cat-card.drag-over{background:#4a4638;box-shadow:0 0 0 2px var(--mustard) inset;}
+  @media(max-width:640px){ .dish-row{grid-template-columns:1fr 1fr;} }
+  .dish-row input[type="text"], .dish-row input[type="number"]{
+    padding:8px;border-radius:6px;border:1px solid #cbbd94;background:#fff;color:var(--ink);font-size:13px;
   }
-  .ticket::after{
-    content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);
-    width:4px;height:10px;background:var(--steel);
+  .move-btns{display:flex;flex-direction:column;gap:2px;}
+  .move-btns button{
+    width:24px;height:18px;border:1px solid #cbbd94;background:#fff;border-radius:4px;
+    cursor:pointer;font-size:10px;color:#6b5d38;line-height:1;padding:0;
   }
-  .ticket.r1{transform:rotate(-1.3deg);}
-  .ticket.r2{transform:rotate(1.1deg);}
-  .ticket.r3{transform:rotate(-0.5deg);}
-  .ticket-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
-  .ticket-num{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;}
-  .ticket-time{font-family:'Space Mono',monospace;font-size:11px;color:#8a7a52;}
-  .ticket-loc{font-size:12px;font-weight:700;color:var(--diner-red);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.5px;}
-  .ticket-name{font-size:12px;color:#6b5d38;margin-bottom:8px;}
-  .ticket-items{list-style:none;padding:0;margin:0 0 10px;}
-  .ticket-items li{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px dotted #cbbd94;}
-  .ticket-items .q{font-family:'Space Mono',monospace;color:#8a7a52;margin-right:6px;}
-  .ticket-note{font-size:12px;background:#fff;border:1px dashed #cbbd94;padding:6px 8px;border-radius:6px;margin-bottom:10px;color:#6b5d38;}
-  .ticket-total{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:10px;padding-top:4px;border-top:1px solid #cbbd94;}
-  .pickup-badge{
-    display:inline-flex;align-items:center;gap:6px;background:#EFE4CB;border:1px solid #cbbd94;
-    border-radius:6px;padding:6px 10px;font-size:13px;font-weight:700;margin-bottom:10px;color:#4b3f22;
+  .move-btns button:disabled{opacity:0.3;cursor:default;}
+  .cat-move-btns{display:flex;gap:4px;}
+  .cat-move-btns button{
+    width:30px;height:30px;border:1px solid var(--steel-line);background:var(--steel);color:var(--cream);
+    border-radius:6px;cursor:pointer;font-size:12px;
   }
-  .pickup-badge .clock{font-size:14px;}
-  .needs-time{
-    background:#FBE4E1;border:1px dashed var(--diner-red);border-radius:6px;padding:8px 10px;
-    font-size:11px;font-weight:700;color:var(--diner-red);text-transform:uppercase;letter-spacing:0.5px;
-    margin-bottom:10px;text-align:center;
+  .cat-move-btns button:disabled{opacity:0.3;cursor:default;}
+  .icon-btn.opts{background:#4a4238;color:var(--mustard);}
+  .icon-btn.opts.active{background:var(--mustard);color:var(--ink);}
+  .options-panel{
+    background:#3d3a34;border:1px dashed var(--chrome);border-radius:8px;
+    padding:12px;margin:-2px 0 10px;
   }
-  .time-picks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
-  .time-pick{
-    padding:6px 10px;border-radius:16px;border:1px solid #cbbd94;background:#fff;
-    font-size:12px;font-weight:700;cursor:pointer;color:#4b3f22;
+  .option-group-card{background:var(--cream);border-radius:8px;padding:10px;margin-bottom:10px;color:var(--ink);}
+  .option-group-top{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+  .option-group-top input[type="text"]{flex:1;padding:7px;border-radius:6px;border:1px solid #cbbd94;font-size:13px;}
+  .option-group-top select{padding:7px;border-radius:6px;border:1px solid #cbbd94;font-size:12px;}
+  .option-group-top input[type="number"]{width:56px;padding:7px;border-radius:6px;border:1px solid #cbbd94;font-size:13px;}
+  .option-group-card textarea{
+    width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid #cbbd94;font-size:13px;
+    font-family:'Inter',sans-serif;
   }
-  .time-pick.selected{background:var(--mustard);border-color:var(--mustard);color:var(--ink);}
-  .custom-time-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-  .custom-time-row input[type="time"]{
-    flex:1;padding:8px;border-radius:6px;border:1px solid #cbbd94;font-family:'Inter',sans-serif;font-size:13px;
+  .option-group-card label{font-size:11px;color:#7a6c46;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;}
+  .add-group-btn{
+    width:100%;padding:9px;border-radius:6px;border:1px dashed var(--mustard);background:transparent;
+    color:var(--mustard);font-size:12px;font-weight:700;cursor:pointer;
   }
-  .ticket-actions{display:flex;gap:8px;}
-  .tk-btn{
-    flex:1;padding:9px;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;
-    text-transform:uppercase;letter-spacing:0.5px;
+  .sold-toggle{display:flex;align-items:center;gap:6px;font-size:11px;color:#6b5d38;white-space:nowrap;}
+  .add-dish-btn{
+    width:100%;padding:9px;border-radius:6px;border:1px dashed var(--chrome);background:transparent;
+    color:var(--chrome);font-size:12px;font-weight:700;cursor:pointer;margin-top:4px;
   }
-  .tk-btn.confirm{background:var(--diner-red);color:#fff;}
-  .tk-btn.confirm:disabled{background:#cbbd94;color:#8a7a52;cursor:not-allowed;}
-  .tk-btn.start{background:var(--mustard);color:var(--ink);}
-  .tk-btn.finish{background:var(--grill-green);color:#fff;}
-  .tk-btn.archive{background:#ddd0aa;color:#5c4f2c;}
-  .col-empty{color:var(--muted);font-size:12px;padding:14px;border:1px dashed var(--steel-line);border-radius:8px;text-align:center;}
-  .badge-new{
-    position:absolute;top:8px;right:10px;background:var(--diner-red);color:#fff;
-    font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:1px;
+  .add-cat-btn{
+    width:100%;padding:12px;border-radius:8px;border:1px dashed var(--mustard);background:transparent;
+    color:var(--mustard);font-size:13px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;
   }
+  .save-bar{
+    position:fixed;left:0;right:0;bottom:0;background:var(--steel);border-top:1px solid var(--steel-line);
+    padding:12px 20px;display:flex;justify-content:flex-end;align-items:center;gap:12px;z-index:20;
+  }
+  .save-btn{
+    padding:12px 24px;border:none;border-radius:8px;background:var(--diner-red);color:#fff;
+    font-weight:700;font-size:14px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;
+  }
+  .saved-note{font-size:12px;color:var(--grill-green);font-weight:700;opacity:0;transition:opacity .2s;}
+  .saved-note.show{opacity:1;}
 </style>
 </head>
 <body>
 
 <div class="checker"></div>
 <div class="topbar">
-  <div class="brand"><small id="brandTag">Est. on Main Street</small><strong id="brandName">MAPLE &amp; MAIN</strong></div>
-  <div style="font-size:11px;color:var(--muted);">Restaurant order screen — not visible to customers</div>
+  <div class="brand"><small>Admin</small><strong>MAPLE &amp; MAIN</strong></div>
+  <div class="warn">Changes appear on the ordering site within ~20 seconds</div>
 </div>
 
-<div class="kitchen" id="kitchenView"></div>
+<div class="wrap">
+  <h2>Site Info</h2>
+  <div class="card" id="siteCard"></div>
+
+  <h2>SEO</h2>
+  <div class="card" id="seoCard"></div>
+
+  <h2>Ordering Hours</h2>
+  <div class="card" id="hoursCard"></div>
+
+  <h2>Printer Stations</h2>
+  <div class="card" id="stationsCard"></div>
+
+  <h2>Login Credentials</h2>
+  <div class="card" id="credentialsCard"></div>
+
+  <h2>Menu</h2>
+  <button class="add-cat-btn" id="loadFullMenuBtn" style="border-color:var(--diner-red);color:var(--diner-red);margin-bottom:12px;">⚠️ Load Full Menu (174 items) — replaces everything below</button>
+  <div id="menuList"></div>
+  <button class="add-cat-btn" id="addCatBtn">+ Add Category</button>
+</div>
+
+<div class="save-bar">
+  <span class="saved-note" id="savedNote">Saved ✓</span>
+  <button class="save-btn" id="saveBtn">Save Changes</button>
+</div>
 
 <script>
-let soundEnabled = true;
-let knownOrderIds = new Set();
-let firstLoad = true;
-let audioCtx = null;
-let pendingSelections = {}; // orderId -> {offsetMinutes, customTime}
-
-function ensureAudioCtx(){
-  if(!audioCtx){
-    try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){}
-  }
-  return audioCtx;
-}
-
-function playAlert(){
-  if(!soundEnabled) return;
-  try{
-    const ctx = ensureAudioCtx();
-    if(ctx){
-      const now = ctx.currentTime;
-      [0, 0.18, 0.36].forEach((offset,i)=>{
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = i===1 ? 1046 : 880;
-        gain.gain.setValueAtTime(0.0001, now+offset);
-        gain.gain.exponentialRampToValueAtTime(0.35, now+offset+0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now+offset+0.16);
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(now+offset); osc.stop(now+offset+0.18);
-      });
+const DEFAULT_SITE = {
+  name: 'MAPLE & MAIN',
+  tagline: 'Est. on Main Street',
+  payNote: 'No online payment — please pay at the counter or with your server.',
+  contact: { phone: '', address: '1620 NY-22, Brewster, NY 10509', hours: '' },
+  notifyEmail: '',
+  taxRate: 8.375,
+  deliveryEnabled: false,
+  orderingHours: {
+    timezone: 'America/New_York',
+    schedule: {
+      mon: { closed: true },
+      tue: { open: '11:00', close: '20:45' },
+      wed: { open: '11:00', close: '20:45' },
+      thu: { open: '11:00', close: '20:45' },
+      fri: { open: '11:00', close: '20:45' },
+      sat: { open: '11:00', close: '20:45' },
+      sun: { open: '11:00', close: '20:45' },
     }
-  }catch(e){ console.warn('alert sound failed', e); }
-  if(navigator.vibrate){ navigator.vibrate([200,80,200,80,200]); }
-}
-
-async function loadOrders(){
-  try{
-    const res = await fetch('/api/orders');
-    if(!res.ok) return [];
-    return await res.json();
-  }catch(e){ return []; }
-}
-
-function timeAgo(ts){
-  const mins = Math.max(0, Math.floor((Date.now()-ts)/60000));
-  return mins===0 ? 'just now' : mins+' min ago';
-}
-
-function formatClock(date){
-  return date.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-}
-
-function computePickupLabel(sel){
-  if(!sel) return null;
-  if(sel.customTime){
-    const [h,m] = sel.customTime.split(':').map(Number);
-    const d = new Date(); d.setHours(h,m,0,0);
-    return formatClock(d);
   }
-  if(sel.offsetMinutes){
-    return formatClock(new Date(Date.now()+sel.offsetMinutes*60000));
+};
+const DAY_LABELS = { mon:'Monday', tue:'Tuesday', wed:'Wednesday', thu:'Thursday', fri:'Friday', sat:'Saturday', sun:'Sunday' };
+const DEFAULT_SEO = {
+  title: 'Maple & Main · Order Online',
+  description: 'Order online for pickup at Maple & Main.'
+};
+const DEFAULT_MENU = [
+  {
+    "cat": "Appetizers",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d1",
+        "name": "Gyoza",
+        "desc": "Pork or veggie, steamed or fried dumplings",
+        "price": 6.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d2",
+        "name": "Shumai",
+        "desc": "Steamed shrimp dumpling",
+        "price": 6.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d3",
+        "name": "Edamame",
+        "desc": "Steamed fresh soybeans",
+        "price": 6.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d4",
+        "name": "Age Tofu",
+        "desc": "",
+        "price": 6.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d5",
+        "name": "Shrimp & Vegetable Tempura",
+        "desc": "",
+        "price": 8.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d6",
+        "name": "Crispy Soft Shell Crab",
+        "desc": "",
+        "price": 10.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d7",
+        "name": "Crispy Calamari",
+        "desc": "",
+        "price": 9.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d8",
+        "name": "Japanese Spring Roll",
+        "desc": "",
+        "price": 4,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d9",
+        "name": "Kani Su",
+        "desc": "Crabmeat and cucumber in ponzu sauce",
+        "price": 7.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d10",
+        "name": "Sushi Appetizer",
+        "desc": "5 pcs assorted raw fish with seasoned rice",
+        "price": 10.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d11",
+        "name": "Sashimi Appetizer",
+        "desc": "8 pcs assorted sliced raw fish",
+        "price": 12.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d12",
+        "name": "Pepper Tuna",
+        "desc": "Sliced fresh tuna with grounded pepper and ponzu sauce",
+        "price": 12.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d13",
+        "name": "Yellowtail Jalapeno",
+        "desc": "Sliced yellowtail with jalapeño and ponzu sauce",
+        "price": 12.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d14",
+        "name": "Sushi Pizza",
+        "desc": "Pancake topped with avocado, spicy tuna, spicy mayo, eel sauce, and scallion",
+        "price": 12.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d15",
+        "name": "Sexy Jalapeno",
+        "desc": "Deep fried jalapeño with cream cheese and spicy yellowtail, topped with masago, scallion and chef's special sauce",
+        "price": 12.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d16",
+        "name": "Tako Su",
+        "desc": "Octopus w. cucumber in ponzu sauce",
+        "price": 10.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d17",
+        "name": "Tuna or Salmon Tartar",
+        "desc": "Chopped tuna or salmon and avocado with roe and scallion",
+        "price": 12.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Sushi Bar Entrée",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d18",
+        "name": "Dinner Maki Combo",
+        "desc": "Tuna roll, salmon roll & California roll",
+        "price": 16.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d19",
+        "name": "Spicy Maki Combo",
+        "desc": "Spicy crunchy tuna roll, spicy crunchy salmon roll, spicy crunchy yellowtail roll",
+        "price": 17.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d20",
+        "name": "California Maki Combo",
+        "desc": "3 California rolls",
+        "price": 16.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d21",
+        "name": "Vegetable Maki Combo",
+        "desc": "Avocado, cucumber, asparagus roll",
+        "price": 14.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d22",
+        "name": "Tempura Maki",
+        "desc": "Roll of chicken tempura, kani tempura and shrimp tempura",
+        "price": 17.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d23",
+        "name": "Chirashi",
+        "desc": "Chef's choice of 15 pcs of assorted fish over sushi rice",
+        "price": 24.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d24",
+        "name": "Sushi Regular",
+        "desc": "7 pcs sushi with 1 California roll",
+        "price": 20.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d25",
+        "name": "Sushi Deluxe",
+        "desc": "9 pcs sushi with 1 tuna roll",
+        "price": 23.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d26",
+        "name": "Sashimi Regular",
+        "desc": "13 pcs sashimi served w. rice on the side",
+        "price": 23.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d27",
+        "name": "Sashimi Deluxe",
+        "desc": "16 pcs sashimi served w. rice on the side",
+        "price": 26.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d28",
+        "name": "Sushi and Sashimi Combo",
+        "desc": "Chef's choice of 7 pcs sushi, 9 pcs sashimi and a tuna roll",
+        "price": 27.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d29",
+        "name": "Unagi Don",
+        "desc": "Broiled smoked eel (10 pcs) with eel sauce on rice",
+        "price": 24.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d30",
+        "name": "Salmon Don",
+        "desc": "10 pcs with rice",
+        "price": 23.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d31",
+        "name": "Tuna Don",
+        "desc": "10 pcs with rice",
+        "price": 23.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d32",
+        "name": "Love Boat for 2",
+        "desc": "Chef's choice of 8 pcs sushi, 10 pcs sashimi, California roll and a rising sun roll",
+        "price": 50.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d33",
+        "name": "Aji Maki Combo",
+        "desc": "Spicy crunchy tuna roll, salmon avocado roll and eel cucumber roll",
+        "price": 17.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d34",
+        "name": "Aji Sushi Combo",
+        "desc": "3 pcs tuna, 3 pcs salmon, 3 pcs yellowtail and a spicy crunchy tuna roll",
+        "price": 24.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d35",
+        "name": "Special Roll Combo",
+        "desc": "Red dragon roll, California roll and salmon avocado roll",
+        "price": 24.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Salad",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d36",
+        "name": "Green Salad",
+        "desc": "Lettuce, carrots & cucumber with ginger dressing",
+        "price": 3,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d37",
+        "name": "Seaweed Salad",
+        "desc": "Special Japanese seaweed with sesame seeds",
+        "price": 6.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d38",
+        "name": "Kani Salad",
+        "desc": "Crab sticks & cucumber mixed with spicy mayo",
+        "price": 6.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d39",
+        "name": "Spicy Seafood Salad",
+        "desc": "Green salad with kani, shrimp & octopus",
+        "price": 9.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d40",
+        "name": "Black Pepper Tuna Salad",
+        "desc": "Green salad with black pepper tuna",
+        "price": 13.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d41",
+        "name": "Avocado Salad",
+        "desc": "Green salad with avocado",
+        "price": 6.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Soup",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d42",
+        "name": "Miso Soup",
+        "desc": "",
+        "price": 3,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d43",
+        "name": "Clear Soup",
+        "desc": "",
+        "price": 3,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d44",
+        "name": "Spicy Noodle Soup",
+        "desc": "",
+        "price": 9.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Sushi/Sashimi A La Carte",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d45",
+        "name": "Black Pepper Tuna",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d46",
+        "name": "Shrimp",
+        "desc": "2 pc per order",
+        "price": 5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d47",
+        "name": "Tuna",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d48",
+        "name": "White Tuna",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d49",
+        "name": "Striped Bass",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d50",
+        "name": "Red Snapper",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d51",
+        "name": "Yellowtail",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d52",
+        "name": "Salmon",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d53",
+        "name": "Flying Fish Roe",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d54",
+        "name": "Salmon Roe",
+        "desc": "2 pc per order",
+        "price": 8,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d55",
+        "name": "Scallop",
+        "desc": "2 pc per order",
+        "price": 8,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d56",
+        "name": "Red Clam",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d57",
+        "name": "Eel",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d58",
+        "name": "Octopus",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d59",
+        "name": "Smoked Salmon",
+        "desc": "2 pc per order",
+        "price": 6,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d60",
+        "name": "Crab Stick",
+        "desc": "2 pc per order",
+        "price": 5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d61",
+        "name": "Custard Eggs",
+        "desc": "2 pc per order",
+        "price": 5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Classic Roll / Hand Roll",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d62",
+        "name": "Salmon Roll",
+        "desc": "Raw",
+        "price": 6.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d63",
+        "name": "Yellowtail Roll",
+        "desc": "Raw",
+        "price": 6.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d64",
+        "name": "Tuna Roll",
+        "desc": "Raw",
+        "price": 6.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d65",
+        "name": "Tuna Avocado Roll",
+        "desc": "Raw",
+        "price": 7,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d66",
+        "name": "Salmon Avocado Roll",
+        "desc": "Raw",
+        "price": 7,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d67",
+        "name": "Yellowtail Jalapeno Roll",
+        "desc": "Raw",
+        "price": 7,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d68",
+        "name": "Spicy Crunchy Tuna Roll",
+        "desc": "Raw",
+        "price": 6.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d69",
+        "name": "Spicy Crunchy Salmon Roll",
+        "desc": "Raw",
+        "price": 6.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d70",
+        "name": "Spicy Crunchy Yellowtail Roll",
+        "desc": "Raw",
+        "price": 6.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d71",
+        "name": "Philadelphia Roll",
+        "desc": "Smoked salmon, cream cheese & avocado",
+        "price": 7,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d72",
+        "name": "New York Roll",
+        "desc": "Tuna, cream cheese, avocado",
+        "price": 7,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d73",
+        "name": "Alaska Roll",
+        "desc": "Salmon, avocado, cucumber",
+        "price": 7.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d74",
+        "name": "Christmas Roll",
+        "desc": "Tuna, yellowtail, tobiko, crunch",
+        "price": 7.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d75",
+        "name": "Tokyo Roll",
+        "desc": "Tuna, salmon, yellowtail with red caviar",
+        "price": 8.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d76",
+        "name": "Spicy Crunchy Scallop Roll",
+        "desc": "Raw",
+        "price": 10.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Cooked & Vegetable Rolls",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d77",
+        "name": "California Roll",
+        "desc": "Crab meat, avocado & cucumber",
+        "price": 5.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d78",
+        "name": "Shrimp Avocado Roll",
+        "desc": "",
+        "price": 6.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d79",
+        "name": "Shrimp Cucumber Roll",
+        "desc": "",
+        "price": 6.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d80",
+        "name": "Boston Roll",
+        "desc": "Shrimp, cucumber, lettuce & Japanese mayo",
+        "price": 6.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d81",
+        "name": "Eel Avocado or Cucumber Roll",
+        "desc": "",
+        "price": 7.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d82",
+        "name": "Spicy Crunchy Shrimp Roll",
+        "desc": "",
+        "price": 6.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d83",
+        "name": "Red Snapper Tempura Roll",
+        "desc": "",
+        "price": 6.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d84",
+        "name": "Shrimp Tempura Roll",
+        "desc": "",
+        "price": 7.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d85",
+        "name": "Salmon Tempura Roll",
+        "desc": "",
+        "price": 7.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d86",
+        "name": "Chicken Tempura Roll",
+        "desc": "",
+        "price": 7.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d87",
+        "name": "Spicy Salmon Tempura Roll",
+        "desc": "",
+        "price": 7.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d88",
+        "name": "Spicy Tuna Tempura Roll",
+        "desc": "",
+        "price": 7.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d89",
+        "name": "Fried Banana Roll",
+        "desc": "",
+        "price": 5.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d90",
+        "name": "Crab Meat Tempura Roll",
+        "desc": "Crab meat tempura, avocado and cucumber",
+        "price": 6.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d91",
+        "name": "Shrimp Asparagus Roll",
+        "desc": "",
+        "price": 6.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d92",
+        "name": "Spicy Crunchy Crab Roll",
+        "desc": "",
+        "price": 6.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d93",
+        "name": "Mango Avocado Roll",
+        "desc": "",
+        "price": 6.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d94",
+        "name": "Oshinko Roll",
+        "desc": "",
+        "price": 4.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d95",
+        "name": "Avocado Roll",
+        "desc": "",
+        "price": 4.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d96",
+        "name": "Cucumber Roll",
+        "desc": "",
+        "price": 4.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d97",
+        "name": "Asparagus Tempura Roll",
+        "desc": "",
+        "price": 5.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d98",
+        "name": "Avocado Cucumber Roll",
+        "desc": "",
+        "price": 5.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d99",
+        "name": "Sweet Potato Roll (Vegetable)",
+        "desc": "",
+        "price": 5.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d100",
+        "name": "AAC Roll",
+        "desc": "Avocado, asparagus, cucumber",
+        "price": 5.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Special Roll",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d101",
+        "name": "Green Dragon Roll",
+        "desc": "Eel cucumber roll topped with sliced avocado, flying fish roe and eel sauce",
+        "price": 14.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d102",
+        "name": "Rainbow Roll",
+        "desc": "California roll topped with assorted raw fish and avocado",
+        "price": 13.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d103",
+        "name": "Spicy Girl Roll",
+        "desc": "10 pcs jumbo rolls; spicy tuna, spicy yellowtail, spicy salmon and avocado wrapped in soybean paper",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d104",
+        "name": "Sweet Heart Roll",
+        "desc": "Crunchy-spicy tuna and avocado inside, wrapped with fresh tuna",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d105",
+        "name": "Black Dragon Roll",
+        "desc": "Shrimp tempura and cucumber roll, topped with sliced eel, avocado and eel sauce",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d106",
+        "name": "Special Lobster Roll",
+        "desc": "Shrimp tempura and avocado roll topped with lobster salad, crunch and special sauce",
+        "price": 14.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d107",
+        "name": "Pink Lady Roll",
+        "desc": "10 pcs jumbo rolls; tuna, salmon, yellowtail, crabmeat tempura, avocado & cucumber wrapped in soybean paper",
+        "price": 16.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d108",
+        "name": "Red Dragon Roll",
+        "desc": "Shrimp tempura & avocado inside, spicy crab meat on the top",
+        "price": 13.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d109",
+        "name": "Spider Roll",
+        "desc": "Deep-fried soft shell crab with avocado, cucumber and masago",
+        "price": 12.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d110",
+        "name": "Angry Mr. Mike Roll",
+        "desc": "Shrimp tempura and spicy tuna inside, topped with avocado & lobster-kani mix, drizzled with spicy mayo and eel sauce",
+        "price": 17.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d111",
+        "name": "Brewster Roll",
+        "desc": "Spicy crab meat and avocado inside, topped with pepper tuna",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d112",
+        "name": "Naruto Roll",
+        "desc": "Tuna, salmon, yellowtail and avocado wrapped with sliced cucumber",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d113",
+        "name": "Crazy Tuna Roll",
+        "desc": "Avocado & pepper tuna topped with crunchy spicy tuna",
+        "price": 14.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d114",
+        "name": "Snow Mountain Roll",
+        "desc": "Crabmeat with avocado inside, lobster salad on the top",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d115",
+        "name": "American Dream Roll",
+        "desc": "Tuna, salmon, yellowtail inside, topped with spicy crabmeat",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d116",
+        "name": "Rising Sun Roll",
+        "desc": "Spicy-crunchy tuna and avocado topped with salmon and yellowtail",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d117",
+        "name": "Special Eel Roll",
+        "desc": "Spicy shrimp rolled with eel and avocado",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d118",
+        "name": "Beautiful Tuna Roll",
+        "desc": "Spicy tuna rolled with tuna and avocado",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d119",
+        "name": "Beautiful Salmon Roll",
+        "desc": "Spicy salmon rolled with salmon and avocado",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d120",
+        "name": "Rainbow Shrimp Roll",
+        "desc": "Spicy shrimp rolled with tuna, salmon and avocado",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d121",
+        "name": "Hot Dragon Roll",
+        "desc": "Shrimp tempura rolled with crunchy spicy tuna",
+        "price": 13.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d122",
+        "name": "Route 22 Roll",
+        "desc": "Salmon, avocado and cream cheese rolled with spicy crab",
+        "price": 13.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d123",
+        "name": "Tempura California Roll",
+        "desc": "Crabmeat, cream cheese and avocado (fried)",
+        "price": 11.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d124",
+        "name": "Volcano Roll",
+        "desc": "California rolled with spicy tuna",
+        "price": 13.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d125",
+        "name": "Sexy Avocado Roll",
+        "desc": "Spicy tuna and crunchy flake topped with avocado",
+        "price": 14.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d126",
+        "name": "Aji Roll",
+        "desc": "Shrimp tempura and eel roll, topped with spicy crab meat and avocado, drizzled with spicy mayo, eel sauce and fish egg",
+        "price": 17.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d127",
+        "name": "Bubble Roll",
+        "desc": "10 pcs jumbo rolls, eel, crab meat, shrimp, avocado, cucumber, wrapped in soybean paper",
+        "price": 15.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d128",
+        "name": "Creamy Potato Roll",
+        "desc": "Sweet potato, cream cheese, topped with avocado and eel sauce",
+        "price": 12.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d129",
+        "name": "Godzilla Roll",
+        "desc": "Spicy crab, crunchy inside top with eel",
+        "price": 15,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Dinner Box",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d130",
+        "name": "Chicken Teriyaki Box",
+        "desc": "Served with miso soup, salad, white rice, California roll and shumai",
+        "price": 20.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d131",
+        "name": "Beef Teriyaki Box",
+        "desc": "Served with miso soup, salad, white rice, California roll and shumai",
+        "price": 22.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d132",
+        "name": "Shrimp Teriyaki Box",
+        "desc": "Served with miso soup, salad, white rice, California roll and shumai",
+        "price": 22.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d133",
+        "name": "Salmon Teriyaki Box",
+        "desc": "Served with miso soup, salad, white rice, California roll and shumai",
+        "price": 22.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d134",
+        "name": "Scallop Teriyaki Box",
+        "desc": "Served with miso soup, salad, white rice, California roll and shumai",
+        "price": 23.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d135",
+        "name": "Shrimp Tempura Box",
+        "desc": "Served with miso soup, salad, white rice, California roll and shumai",
+        "price": 22.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d136",
+        "name": "Chicken Katsu Bento Box",
+        "desc": "Served with miso soup, salad, white rice, California roll and shumai",
+        "price": 19.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Udon Soup",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d137",
+        "name": "Vegetable Udon Soup",
+        "desc": "",
+        "price": 11.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d138",
+        "name": "Tempura Udon Soup",
+        "desc": "",
+        "price": 14.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d139",
+        "name": "Nabeyaki Udon Soup",
+        "desc": "Chicken-shrimp tempura, eggs and vegetable",
+        "price": 15.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d140",
+        "name": "Seafood Udon Soup",
+        "desc": "Jumbo shrimp, fish, scallop, crabmeat and vegetable",
+        "price": 17.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Dessert",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d141",
+        "name": "Green Tea Ice Cream",
+        "desc": "",
+        "price": 4.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d142",
+        "name": "Vanilla Ice Cream",
+        "desc": "",
+        "price": 4.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d143",
+        "name": "Tempura Banana",
+        "desc": "",
+        "price": 4.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d144",
+        "name": "Tempura Ice Cream",
+        "desc": "",
+        "price": 7,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d145",
+        "name": "Fried Cheesecake",
+        "desc": "",
+        "price": 7,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d146",
+        "name": "Mochi Ice Cream",
+        "desc": "2 pcs",
+        "price": 5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Tempura & Katsu",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d147",
+        "name": "Vegetable Tempura",
+        "desc": "Served with miso soup, salad and rice",
+        "price": 15.25,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d148",
+        "name": "Chicken Tempura",
+        "desc": "Served with miso soup, salad and rice",
+        "price": 16.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d149",
+        "name": "Shrimp Tempura",
+        "desc": "Served with miso soup, salad and rice",
+        "price": 17.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d150",
+        "name": "Chicken Katsu",
+        "desc": "Deep-fried chicken cutlet",
+        "price": 16.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Teriyaki Dinner",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d151",
+        "name": "Tofu Teriyaki",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 17.75,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d152",
+        "name": "Chicken Teriyaki",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 18.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d153",
+        "name": "Beef Teriyaki",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 24.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d154",
+        "name": "Salmon Teriyaki",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 22.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d155",
+        "name": "Scallop Teriyaki",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 25.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d156",
+        "name": "Shrimp Teriyaki",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 22.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d157",
+        "name": "Chicken & Steak",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 24.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d158",
+        "name": "Chicken & Shrimp",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 22.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d159",
+        "name": "Chicken & Salmon",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 24.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d160",
+        "name": "Chicken & Scallop",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 24.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d161",
+        "name": "Steak & Shrimp",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 24.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d162",
+        "name": "Steak & Salmon",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 24.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d163",
+        "name": "Steak & Scallop",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 24.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d164",
+        "name": "Shrimp & Salmon",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 24.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d165",
+        "name": "Shrimp & Scallop",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 24.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d166",
+        "name": "Salmon & Scallop",
+        "desc": "Served with miso soup, salad and fried noodle",
+        "price": 24.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Sushi Bar Lunch",
+    "orderWindow": {
+      "enabled": true,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d167",
+        "name": "Sushi Lunch",
+        "desc": "5 pcs of sushi and California roll",
+        "price": 13.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d168",
+        "name": "Sashimi Lunch",
+        "desc": "10 pcs of assorted sashimi",
+        "price": 15.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d169",
+        "name": "Sushi and Sashimi Lunch",
+        "desc": "4 pcs of sushi, 6 pcs of sashimi and spicy tuna roll",
+        "price": 17.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d170",
+        "name": "Any Two Rolls",
+        "desc": "Served with miso soup or salad. Pick 2 rolls.",
+        "price": 13,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [
+          {
+            "id": "og_171_pz52w",
+            "label": "Choose 2 rolls",
+            "type": "multi",
+            "count": 2,
+            "choices": [
+              "Alaska",
+              "Avocado",
+              "Boston",
+              "California",
+              "Cucumber",
+              "Cucumber Avocado",
+              "Philadelphia",
+              "Yellowtail",
+              "Salmon",
+              "Tuna",
+              "Salmon Avocado",
+              "Shrimp Avocado",
+              "Shrimp Tempura",
+              "Spicy Crab",
+              "Spicy Salmon",
+              "Spicy Tuna",
+              "Spicy Yellowtail",
+              "Spicy Shrimp",
+              "Sweet Potato",
+              "Tuna Avocado",
+              "Eel Avocado",
+              "Fried Banana Roll"
+            ]
+          }
+        ],
+        "printRouting": []
+      },
+      {
+        "id": "d172",
+        "name": "Any Three Rolls",
+        "desc": "Served with miso soup or salad. Pick 3 rolls.",
+        "price": 16.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [
+          {
+            "id": "og_173_jci58",
+            "label": "Choose 3 rolls",
+            "type": "multi",
+            "count": 3,
+            "choices": [
+              "Alaska",
+              "Avocado",
+              "Boston",
+              "California",
+              "Cucumber",
+              "Cucumber Avocado",
+              "Philadelphia",
+              "Yellowtail",
+              "Salmon",
+              "Tuna",
+              "Salmon Avocado",
+              "Shrimp Avocado",
+              "Shrimp Tempura",
+              "Spicy Crab",
+              "Spicy Salmon",
+              "Spicy Tuna",
+              "Spicy Yellowtail",
+              "Spicy Shrimp",
+              "Sweet Potato",
+              "Tuna Avocado",
+              "Eel Avocado",
+              "Fried Banana Roll"
+            ]
+          }
+        ],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Lunch Bento Box",
+    "orderWindow": {
+      "enabled": true,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d174",
+        "name": "Chicken Teriyaki Bento Box",
+        "desc": "From 11AM-3PM, served with miso soup, salad, rice, shumai & California roll",
+        "price": 13.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d175",
+        "name": "Shrimp Teriyaki Bento Box",
+        "desc": "From 11AM-3PM, served with miso soup, salad, rice, shumai & California roll",
+        "price": 13.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d176",
+        "name": "Chicken Katsu Bento Box",
+        "desc": "From 11AM-3PM, served with miso soup, salad, rice, shumai & California roll",
+        "price": 13.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d177",
+        "name": "Beef Teriyaki Bento Box",
+        "desc": "From 11AM-3PM, served with miso soup, salad, rice, shumai & California roll",
+        "price": 14.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d178",
+        "name": "Salmon Teriyaki Bento Box",
+        "desc": "From 11AM-3PM, served with miso soup, salad, rice, shumai & California roll",
+        "price": 14.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d179",
+        "name": "Shrimp and Vegetable Tempura Bento Box",
+        "desc": "From 11AM-3PM, served with miso soup, salad, rice, shumai & California roll",
+        "price": 14.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Noodle",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d180",
+        "name": "Plain Noodle (Small)",
+        "desc": "",
+        "price": 4.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d181",
+        "name": "Plain Noodle (Large)",
+        "desc": "",
+        "price": 8.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d182",
+        "name": "Vegetable Noodle (Small)",
+        "desc": "",
+        "price": 6.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d183",
+        "name": "Vegetable Noodle (Large)",
+        "desc": "",
+        "price": 10.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d184",
+        "name": "Chicken Noodle (Small)",
+        "desc": "",
+        "price": 7.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d185",
+        "name": "Chicken Noodle (Large)",
+        "desc": "",
+        "price": 11.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d186",
+        "name": "Shrimp Noodle (Small)",
+        "desc": "",
+        "price": 8.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d187",
+        "name": "Shrimp Noodle (Large)",
+        "desc": "",
+        "price": 12.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Rice",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d188",
+        "name": "Egg Fried Rice (Small)",
+        "desc": "",
+        "price": 4.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d189",
+        "name": "Egg Fried Rice (Large)",
+        "desc": "",
+        "price": 8.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d190",
+        "name": "Vegetable Egg Fried Rice (Small)",
+        "desc": "",
+        "price": 6.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d191",
+        "name": "Vegetable Egg Fried Rice (Large)",
+        "desc": "",
+        "price": 10.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d192",
+        "name": "Chicken Egg Fried Rice (Small)",
+        "desc": "",
+        "price": 7.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d193",
+        "name": "Chicken Egg Fried Rice (Large)",
+        "desc": "",
+        "price": 11.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d194",
+        "name": "Shrimp Egg Fried Rice (Small)",
+        "desc": "",
+        "price": 8.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d195",
+        "name": "Shrimp Egg Fried Rice (Large)",
+        "desc": "",
+        "price": 12.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d196",
+        "name": "White Rice (Small)",
+        "desc": "",
+        "price": 2.5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d197",
+        "name": "White Rice (Large)",
+        "desc": "",
+        "price": 5,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Party Tray",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d198",
+        "name": "Party Tray A",
+        "desc": "2 Red Dragon Roll, 1 Green Dragon Roll, 1 Special Lobster Roll, 1 Special Eel Roll, 1 Creamy Potato Roll, 1 Godzilla Roll",
+        "price": 85,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d199",
+        "name": "Party Tray B",
+        "desc": "2 California Roll, 2 Spicy Tuna Roll, 2 Salmon Avocado Roll, 1 Philadelphia Roll, 2 Tuna Roll, 2 Salmon Roll",
+        "price": 60,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d200",
+        "name": "Party Tray C",
+        "desc": "2 California Roll, 1 Eel Avocado Roll, 1 Eel Cucumber Roll, 2 Shrimp Tempura Roll, 2 Spicy Crab Roll, 1 Avocado Roll",
+        "price": 50,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      },
+      {
+        "id": "d201",
+        "name": "Party Tray D",
+        "desc": "1 Red Dragon Roll, 1 Special Lobster Roll, 1 Rainbow Roll, 2 California Roll, 2 Spicy Tuna Roll, 1 Salmon Avocado Roll",
+        "price": 65,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [],
+        "printRouting": []
+      }
+    ]
+  },
+  {
+    "cat": "Dinner Special",
+    "orderWindow": {
+      "enabled": false,
+      "start": "11:00",
+      "end": "15:00"
+    },
+    "items": [
+      {
+        "id": "d202",
+        "name": "Any 2 Special Rolls",
+        "desc": "Served with soup or salad. Pick 2 special rolls.",
+        "price": 25.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [
+          {
+            "id": "og_203_f154h",
+            "label": "Choose 2 special rolls",
+            "type": "multi",
+            "count": 2,
+            "choices": [
+              "Green Dragon Roll",
+              "Rainbow Roll",
+              "Red Dragon Roll",
+              "Brewster Roll",
+              "Special Eel Roll",
+              "Beautiful Tuna Roll",
+              "Beautiful Salmon Roll",
+              "Rainbow Shrimp Roll",
+              "Hot Dragon Roll",
+              "Route 22 Roll",
+              "Tempura California Roll",
+              "Volcano Roll",
+              "Sexy Avocado Roll",
+              "Spicy Girl Roll",
+              "Sweet Heart Roll",
+              "Black Dragon Roll",
+              "Spider Roll",
+              "Creamy Potato Roll",
+              "Snow Mountain Roll"
+            ]
+          }
+        ],
+        "printRouting": []
+      },
+      {
+        "id": "d204",
+        "name": "Any 3 Special Rolls",
+        "desc": "Served with soup or salad. Pick 3 special rolls.",
+        "price": 36.95,
+        "soldOut": false,
+        "hot": false,
+        "optionGroups": [
+          {
+            "id": "og_205_seztd",
+            "label": "Choose 3 special rolls",
+            "type": "multi",
+            "count": 3,
+            "choices": [
+              "Green Dragon Roll",
+              "Rainbow Roll",
+              "Red Dragon Roll",
+              "Brewster Roll",
+              "Special Eel Roll",
+              "Beautiful Tuna Roll",
+              "Beautiful Salmon Roll",
+              "Rainbow Shrimp Roll",
+              "Hot Dragon Roll",
+              "Route 22 Roll",
+              "Tempura California Roll",
+              "Volcano Roll",
+              "Sexy Avocado Roll",
+              "Spicy Girl Roll",
+              "Sweet Heart Roll",
+              "Black Dragon Roll",
+              "Spider Roll",
+              "Creamy Potato Roll",
+              "Snow Mountain Roll"
+            ]
+          }
+        ],
+        "printRouting": []
+      }
+    ]
   }
-  return null;
-}
+];
 
 function escapeHtml(str){
   return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-const QUICK_MINUTES = [10,15,20,30,45,60];
+let state = { siteInfo: {...DEFAULT_SITE, contact:{...DEFAULT_SITE.contact}}, seo: {...DEFAULT_SEO}, menu: JSON.parse(JSON.stringify(DEFAULT_MENU)), printStations: [] };
+let openOptionsFor = {};
+let openRoutingFor = {};
 
-async function renderKitchen(){
-  const el = document.getElementById('kitchenView');
-  const list = await loadOrders();
+function uid(){ return 'd_' + Date.now() + '_' + Math.floor(Math.random()*10000); }
+function gid(){ return 'og_' + Date.now() + '_' + Math.floor(Math.random()*10000); }
+function sid(){ return 'st_' + Date.now() + '_' + Math.floor(Math.random()*10000); }
 
-  const currentIds = new Set(list.map(o=>o.id));
-  if(!firstLoad){
-    const hasNew = list.some(o=>!knownOrderIds.has(o.id));
-    if(hasNew) playAlert();
-  }
-  knownOrderIds = currentIds;
-  firstLoad = false;
-
-  const groups = {pending:[], confirmed:[], cooking:[], done:[]};
-  list.slice().sort((a,b)=>b.createdAt-a.createdAt).forEach(o=>{
-    (groups[o.status]||groups.pending).push(o);
+function ensureOptionGroups(menu){
+  menu.forEach(sec=>{
+    if(!sec.orderWindow) sec.orderWindow = { enabled:false, start:'11:00', end:'15:00' };
+    sec.items.forEach(it=>{
+      if(!Array.isArray(it.optionGroups)) it.optionGroups = [];
+      if(!Array.isArray(it.printRouting)) it.printRouting = [];
+    });
   });
-  const colDefs = [
-    {key:'pending', label:'New — Needs Time', empty:'No new orders', rot:'r1'},
-    {key:'confirmed', label:'Confirmed', empty:'Nothing waiting', rot:'r2'},
-    {key:'cooking', label:'Cooking', empty:'Nothing cooking', rot:'r3'},
-    {key:'done', label:'Ready', empty:'Nothing ready', rot:'r1'},
-  ];
-
-  let html = `
-    <div class="kitchen-head">
-      <h1><span class="wheel-icon"></span>Incoming Orders</h1>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <button class="sound-toggle" id="soundToggle"></button>
-        <div class="refresh-note" id="lastRefresh"></div>
-      </div>
-    </div>
-    <div class="columns">`;
-
-  colDefs.forEach(col=>{
-    html += `<div class="col ${col.key}"><div class="col-head"><span class="dot"></span>${col.label} (${groups[col.key].length})</div>`;
-    if(groups[col.key].length===0){
-      html += `<div class="col-empty">${col.empty}</div>`;
-    } else {
-      groups[col.key].forEach(o=>{
-        const isFresh = col.key==='pending' && (Date.now()-o.createdAt < 60000);
-        const itemsHtml = o.items.map(it=>`<li><span><span class="q">×${it.qty}</span>${escapeHtml(it.name)}</span><span>$${it.price*it.qty}</span></li>`).join('');
-        const noteHtml = o.note ? `<div class="ticket-note">Note: ${escapeHtml(o.note)}</div>` : '';
-        const nameHtml = o.name ? `<div class="ticket-name">${escapeHtml(o.name)}</div>` : '';
-
-        let bodyHtml = '';
-        if(col.key === 'pending'){
-          const sel = pendingSelections[o.id] || {};
-          const preview = computePickupLabel(sel);
-          bodyHtml = `
-            <div class="needs-time">⏱ Set a pickup time to confirm</div>
-            <div class="time-picks">
-              ${QUICK_MINUTES.map(m=>`<div class="time-pick ${sel.offsetMinutes===m?'selected':''}" data-id="${o.id}" data-mins="${m}">+${m} min</div>`).join('')}
-            </div>
-            <div class="custom-time-row">
-              <input type="time" data-id="${o.id}" class="custom-time-input" value="${sel.customTime||''}">
-            </div>
-            <div class="ticket-actions">
-              <button class="tk-btn confirm" data-id="${o.id}" ${preview?'':'disabled'}>${preview? 'Confirm '+preview : 'Pick a time'}</button>
-            </div>`;
-        } else {
-          const badge = o.pickupTime ? `<div class="pickup-badge"><span class="clock">⏱</span>Pickup ${o.pickupTime}</div>` : '';
-          let actionHtml = '';
-          if(col.key==='confirmed') actionHtml = `<button class="tk-btn start" data-id="${o.id}" data-next="cooking">Start Cooking</button>`;
-          if(col.key==='cooking') actionHtml = `<button class="tk-btn finish" data-id="${o.id}" data-next="done">Mark Ready</button>`;
-          if(col.key==='done') actionHtml = `<button class="tk-btn archive" data-id="${o.id}" data-next="archived">Archive</button>`;
-          bodyHtml = `${badge}<div class="ticket-actions">${actionHtml}</div>`;
-        }
-
-        html += `<div class="ticket ${col.rot} ${col.key==='pending'?'urgent':''}">
-          ${isFresh?'<div class="badge-new">NEW</div>':''}
-          <div class="ticket-top">
-            <div class="ticket-num">#${o.num}</div>
-            <div class="ticket-time">${timeAgo(o.createdAt)}</div>
-          </div>
-          <div class="ticket-loc">${escapeHtml(o.location)}</div>
-          ${nameHtml}
-          <ul class="ticket-items">${itemsHtml}</ul>
-          ${noteHtml}
-          <div class="ticket-total"><span>Total (pay in store)</span><span>$${o.total}</span></div>
-          ${bodyHtml}
-        </div>`;
-      });
-    }
-    html += `</div>`;
-  });
-  html += `</div>`;
-  el.innerHTML = html;
-  document.getElementById('lastRefresh').textContent = 'Last refreshed '+new Date().toLocaleTimeString('en-US');
-
-  const soundBtn = document.getElementById('soundToggle');
-  soundBtn.textContent = soundEnabled ? '🔔 Sound On' : '🔕 Sound Off';
-  soundBtn.classList.toggle('off', !soundEnabled);
-  soundBtn.onclick = ()=>{
-    soundEnabled = !soundEnabled;
-    if(soundEnabled){ ensureAudioCtx(); playAlert(); }
-    renderKitchen();
-  };
-
-  // quick time pick buttons
-  el.querySelectorAll('.time-pick').forEach(btn=>{
-    btn.onclick = ()=>{
-      const id = btn.dataset.id, mins = Number(btn.dataset.mins);
-      pendingSelections[id] = {offsetMinutes:mins, customTime:null};
-      renderKitchen();
-    };
-  });
-  // custom time input
-  el.querySelectorAll('.custom-time-input').forEach(inp=>{
-    inp.onchange = ()=>{
-      const id = inp.dataset.id;
-      pendingSelections[id] = {offsetMinutes:null, customTime:inp.value};
-      renderKitchen();
-    };
-  });
-  // confirm pickup time -> sends time to customer
-  el.querySelectorAll('.tk-btn.confirm').forEach(btn=>{
-    btn.onclick = async ()=>{
-      if(btn.disabled) return;
-      const id = btn.dataset.id;
-      const sel = pendingSelections[id];
-      const label = computePickupLabel(sel);
-      if(!label) return;
-      try{
-        await fetch('/api/orders/'+id, {
-          method:'PATCH',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({status:'confirmed', pickupTime:label, confirmedAt: Date.now()})
-        });
-        delete pendingSelections[id];
-        renderKitchen();
-      }catch(e){ console.error(e); }
-    };
-  });
-  // start / finish / archive
-  el.querySelectorAll('.tk-btn.start, .tk-btn.finish, .tk-btn.archive').forEach(btn=>{
-    btn.onclick = async ()=>{
-      const id = btn.dataset.id, next = btn.dataset.next;
-      try{
-        if(next==='archived'){
-          await fetch('/api/orders/'+id, {method:'DELETE'});
-        } else {
-          await fetch('/api/orders/'+id, {
-            method:'PATCH',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({status:next})
-          });
-        }
-        renderKitchen();
-      }catch(e){ console.error(e); }
-    };
-  });
+  return menu;
 }
 
-async function loadSiteInfo(){
+async function loadConfig(){
   try{
     const res = await fetch('/api/config');
     if(res.ok){
       const cfg = await res.json();
       if(cfg.siteInfo){
-        document.getElementById('brandName').textContent = cfg.siteInfo.name || 'MAPLE & MAIN';
-        document.getElementById('brandTag').textContent = cfg.siteInfo.tagline || '';
+        state.siteInfo = {
+          contact:{phone:'',address:'',hours:''},
+          orderingHours: JSON.parse(JSON.stringify(DEFAULT_SITE.orderingHours)),
+          ...cfg.siteInfo
+        };
+        if(cfg.siteInfo.orderingHours){
+          state.siteInfo.orderingHours = {
+            timezone: cfg.siteInfo.orderingHours.timezone || 'America/New_York',
+            schedule: { ...DEFAULT_SITE.orderingHours.schedule, ...(cfg.siteInfo.orderingHours.schedule||{}) }
+          };
+        }
       }
+      if(cfg.seo) state.seo = cfg.seo;
+      if(cfg.menu && cfg.menu.length) state.menu = ensureOptionGroups(cfg.menu);
+      if(Array.isArray(cfg.printStations)) state.printStations = cfg.printStations;
     }
   }catch(e){}
+  renderSite();
+  renderSeo();
+  renderHours();
+  renderStations();
+  renderCredentials();
+  renderMenu();
 }
 
-ensureAudioCtx();
-loadSiteInfo();
-renderKitchen();
-setInterval(renderKitchen, 3000);
-setInterval(loadSiteInfo, 20000);
+function renderSite(){
+  const el = document.getElementById('siteCard');
+  const contact = state.siteInfo.contact || {phone:'',address:'',hours:''};
+  el.innerHTML = `
+    <div class="field"><label>Restaurant Name</label><input id="siteName" value="${escapeHtml(state.siteInfo.name)}"></div>
+    <div class="field"><label>Tagline</label><input id="siteTagline" value="${escapeHtml(state.siteInfo.tagline)}"></div>
+    <div class="field"><label>Payment Note (shown to customers)</label><textarea id="sitePayNote" rows="2">${escapeHtml(state.siteInfo.payNote)}</textarea></div>
+    <div class="field"><label>Contact Phone</label><input id="contactPhone" value="${escapeHtml(contact.phone)}" placeholder="(555) 123-4567"></div>
+    <div class="field"><label>Contact Address</label><input id="contactAddress" value="${escapeHtml(contact.address)}" placeholder="123 Main St, Anytown"></div>
+    <div class="field"><label>Hours</label><input id="contactHours" value="${escapeHtml(contact.hours)}" placeholder="Mon–Sat 9am–9pm"></div>
+    <div class="field"><label>Order Notification Email</label><input id="notifyEmail" type="email" value="${escapeHtml(state.siteInfo.notifyEmail||'')}" placeholder="you@example.com"></div>
+    <div class="field"><label>Sales Tax Rate (%)</label><input id="taxRate" type="number" step="0.001" value="${state.siteInfo.taxRate!=null?state.siteInfo.taxRate:8.375}"></div>
+    <div class="field">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;">
+        <input type="checkbox" id="deliveryEnabled" style="width:auto;flex:none;" ${state.siteInfo.deliveryEnabled?'checked':''}> Offer delivery (adds a Delivery option next to Pickup)
+      </label>
+    </div>
+    <div class="field">
+      <label>Kitchen Printer Local IP (for direct network printing, e.g. 192.168.1.50)</label>
+      <input id="localPrinterIp" value="${escapeHtml(state.siteInfo.localPrinterIp||'')}" placeholder="192.168.1.50">
+    </div>
+  `;
+  document.getElementById('siteName').oninput = (e)=>{ state.siteInfo.name = e.target.value; };
+  document.getElementById('siteTagline').oninput = (e)=>{ state.siteInfo.tagline = e.target.value; };
+  document.getElementById('sitePayNote').oninput = (e)=>{ state.siteInfo.payNote = e.target.value; };
+  document.getElementById('contactPhone').oninput = (e)=>{ state.siteInfo.contact.phone = e.target.value; };
+  document.getElementById('contactAddress').oninput = (e)=>{ state.siteInfo.contact.address = e.target.value; };
+  document.getElementById('contactHours').oninput = (e)=>{ state.siteInfo.contact.hours = e.target.value; };
+  document.getElementById('notifyEmail').oninput = (e)=>{ state.siteInfo.notifyEmail = e.target.value; };
+  document.getElementById('taxRate').oninput = (e)=>{ state.siteInfo.taxRate = Number(e.target.value)||0; };
+  document.getElementById('deliveryEnabled').onchange = (e)=>{ state.siteInfo.deliveryEnabled = e.target.checked; };
+  document.getElementById('localPrinterIp').oninput = (e)=>{ state.siteInfo.localPrinterIp = e.target.value.trim(); };
+}
+
+function renderSeo(){
+  const el = document.getElementById('seoCard');
+  el.innerHTML = `
+    <div class="field"><label>Page Title (shows in browser tab &amp; Google results)</label><input id="seoTitle" value="${escapeHtml(state.seo.title)}"></div>
+    <div class="field"><label>Meta Description (shows under the title in Google results)</label><textarea id="seoDesc" rows="2">${escapeHtml(state.seo.description)}</textarea></div>
+  `;
+  document.getElementById('seoTitle').oninput = (e)=>{ state.seo.title = e.target.value; };
+  document.getElementById('seoDesc').oninput = (e)=>{ state.seo.description = e.target.value; };
+}
+
+function renderHours(){
+  const el = document.getElementById('hoursCard');
+  const schedule = state.siteInfo.orderingHours.schedule;
+  const dayKeys = ['mon','tue','wed','thu','fri','sat','sun'];
+  el.innerHTML = `
+    <div style="font-size:11px;color:#7a6c46;margin-bottom:10px;">Customers can only place orders during these hours (times are for ${escapeHtml(state.siteInfo.orderingHours.timezone)}).</div>
+    ${dayKeys.map(day=>{
+      const d = schedule[day] || {};
+      return `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #cbbd94;flex-wrap:wrap;">
+          <div style="width:90px;font-weight:700;font-size:13px;">${DAY_LABELS[day]}</div>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#6b5d38;">
+            <input type="checkbox" class="hours-closed" data-day="${day}" ${d.closed?'checked':''}> Closed
+          </label>
+          <input type="time" class="hours-open" data-day="${day}" value="${d.open||'11:00'}" ${d.closed?'disabled':''} style="padding:6px;border-radius:6px;border:1px solid #cbbd94;">
+          <span style="font-size:12px;color:#7a6c46;">to</span>
+          <input type="time" class="hours-close" data-day="${day}" value="${d.close||'20:45'}" ${d.closed?'disabled':''} style="padding:6px;border-radius:6px;border:1px solid #cbbd94;">
+        </div>`;
+    }).join('')}
+  `;
+  el.querySelectorAll('.hours-closed').forEach(cb=>{
+    cb.onchange = ()=>{
+      const day = cb.dataset.day;
+      schedule[day] = schedule[day] || {};
+      schedule[day].closed = cb.checked;
+      renderHours();
+    };
+  });
+  el.querySelectorAll('.hours-open').forEach(inp=>{
+    inp.onchange = ()=>{ schedule[inp.dataset.day].open = inp.value; };
+  });
+  el.querySelectorAll('.hours-close').forEach(inp=>{
+    inp.onchange = ()=>{ schedule[inp.dataset.day].close = inp.value; };
+  });
+}
+
+function renderStations(){
+  const el = document.getElementById('stationsCard');
+  const stations = state.printStations || [];
+  el.innerHTML = `
+    <div style="font-size:11px;color:#7a6c46;margin-bottom:10px;">
+      Set up one printer per kitchen station (e.g. "Kitchen", "Sushi Bar"). Fill in a PrintNode Printer ID if using PrintNode, and/or a Local Network IP if using direct network printing (Epson ePOS) — you can use either or both.
+      Dishes without any print routing rule below will print to your default printer instead.
+    </div>
+    ${stations.map((st,si)=>`
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
+        <input type="text" class="station-name" data-si="${si}" value="${escapeHtml(st.name)}" placeholder="Station name (e.g. Kitchen)" style="flex:1;min-width:140px;padding:8px;border-radius:6px;border:1px solid #cbbd94;">
+        <input type="text" class="station-printerid" data-si="${si}" value="${escapeHtml(st.printerId||'')}" placeholder="PrintNode Printer ID (optional)" style="flex:1;min-width:140px;padding:8px;border-radius:6px;border:1px solid #cbbd94;">
+        <input type="text" class="station-ip" data-si="${si}" value="${escapeHtml(st.ip||'')}" placeholder="Local Network IP (optional, e.g. 192.168.1.50)" style="flex:1;min-width:180px;padding:8px;border-radius:6px;border:1px solid #cbbd94;">
+        <button class="icon-btn del" data-act="delStation" data-si="${si}">Delete</button>
+      </div>`).join('')}
+    <button class="add-dish-btn" id="addStationBtn">+ Add Printer Station</button>
+  `;
+  el.querySelectorAll('.station-name').forEach(inp=>{
+    inp.oninput = ()=>{ state.printStations[inp.dataset.si].name = inp.value; };
+  });
+  el.querySelectorAll('.station-printerid').forEach(inp=>{
+    inp.oninput = ()=>{ state.printStations[inp.dataset.si].printerId = inp.value; };
+  });
+  el.querySelectorAll('.station-ip').forEach(inp=>{
+    inp.oninput = ()=>{ state.printStations[inp.dataset.si].ip = inp.value.trim(); };
+  });
+  el.querySelectorAll('[data-act="delStation"]').forEach(btn=>{
+    btn.onclick = ()=>{ state.printStations.splice(btn.dataset.si,1); renderStations(); renderMenu(); };
+  });
+  document.getElementById('addStationBtn').onclick = ()=>{
+    state.printStations.push({ id: sid(), name:'New Station', printerId:'', ip:'' });
+    renderStations();
+  };
+}
+
+function renderCredentials(){
+  const el = document.getElementById('credentialsCard');
+  el.innerHTML = `
+    <div style="font-size:11px;color:#7a6c46;margin-bottom:14px;">
+      Set separate logins for the kitchen order screen and this admin panel. Leave a field blank to keep its current value unchanged. These save immediately (not part of "Save Changes" below).
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.5px;color:var(--mustard);margin-bottom:8px;">Kitchen Order Screen Login</div>
+    <div class="field"><label>Username</label><input id="credKitchenUser" placeholder="Leave blank to keep current"></div>
+    <div class="field"><label>Password</label><input id="credKitchenPass" type="password" placeholder="Leave blank to keep current"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.5px;color:var(--mustard);margin:14px 0 8px;">Admin Panel Login</div>
+    <div class="field"><label>Username</label><input id="credAdminUser" placeholder="Leave blank to keep current"></div>
+    <div class="field"><label>Password</label><input id="credAdminPass" type="password" placeholder="Leave blank to keep current"></div>
+    <button class="submit-btn" id="saveCredsBtn" style="margin-top:10px;">Update Login Credentials</button>
+    <span class="saved-note" id="credsSavedNote" style="display:block;margin-top:8px;">Saved ✓</span>
+  `;
+  document.getElementById('saveCredsBtn').onclick = async ()=>{
+    const btn = document.getElementById('saveCredsBtn');
+    const payload = {
+      kitchenUser: document.getElementById('credKitchenUser').value,
+      kitchenPassword: document.getElementById('credKitchenPass').value,
+      adminUser: document.getElementById('credAdminUser').value,
+      adminPassword: document.getElementById('credAdminPass').value,
+    };
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try{
+      const res = await fetch('/api/credentials', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      if(!res.ok) throw new Error('save failed');
+      const note = document.getElementById('credsSavedNote');
+      note.classList.add('show');
+      setTimeout(()=>note.classList.remove('show'), 2500);
+      renderCredentials();
+    }catch(e){
+      alert('Could not update credentials — please try again.');
+    }
+    btn.disabled = false; btn.textContent = 'Update Login Credentials';
+  };
+}
+
+function renderMenu(){
+  const el = document.getElementById('menuList');
+  let html = '';
+  state.menu.forEach((sec, ci)=>{
+    const ow = sec.orderWindow || { enabled:false, start:'11:00', end:'15:00' };
+    html += `<div class="cat-card" data-cat-index="${ci}">
+      <div class="cat-title-row">
+        <span class="drag-handle cat-drag-handle" draggable="true" data-ci="${ci}" title="Drag to reorder categories">⠿</span>
+        <div class="cat-move-btns">
+          <button data-act="moveCatUp" data-ci="${ci}" ${ci===0?'disabled':''}>▲</button>
+          <button data-act="moveCatDown" data-ci="${ci}" ${ci===state.menu.length-1?'disabled':''}>▼</button>
+        </div>
+        <input type="text" class="cat-name" data-ci="${ci}" value="${escapeHtml(sec.cat)}">
+        <button class="icon-btn del" data-act="delCat" data-ci="${ci}">Delete Category</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#3d3a34;border-radius:8px;padding:8px 10px;margin-bottom:12px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cream);">
+          <input type="checkbox" class="cat-window-enabled" data-ci="${ci}" ${ow.enabled?'checked':''}> Limit ordering hours for this category
+        </label>
+        <input type="time" class="cat-window-start" data-ci="${ci}" value="${ow.start||'11:00'}" ${ow.enabled?'':'disabled'} style="padding:5px;border-radius:6px;border:1px solid #cbbd94;">
+        <span style="font-size:12px;color:var(--muted);">to</span>
+        <input type="time" class="cat-window-end" data-ci="${ci}" value="${ow.end||'15:00'}" ${ow.enabled?'':'disabled'} style="padding:5px;border-radius:6px;border:1px solid #cbbd94;">
+      </div>
+      <div class="drag-hint">⠿ Drag any dish below onto a different category card to move it there</div>`;
+    sec.items.forEach((it, di)=>{
+      const groups = it.optionGroups || [];
+      const routing = it.printRouting || [];
+      const isOpen = !!openOptionsFor[it.id];
+      const isRoutingOpen = !!openRoutingFor[it.id];
+      html += `
+        <div class="dish-row" draggable="true" data-ci="${ci}" data-di="${di}">
+          <div class="move-btns">
+            <span class="drag-handle" title="Drag to move to another category">⠿</span>
+            <button data-act="moveDishUp" data-ci="${ci}" data-di="${di}" ${di===0?'disabled':''}>▲</button>
+            <button data-act="moveDishDown" data-ci="${ci}" data-di="${di}" ${di===sec.items.length-1?'disabled':''}>▼</button>
+          </div>
+          <input type="text" data-ci="${ci}" data-di="${di}" data-field="name" value="${escapeHtml(it.name)}" placeholder="Dish name">
+          <input type="text" data-ci="${ci}" data-di="${di}" data-field="desc" value="${escapeHtml(it.desc)}" placeholder="Description">
+          <input type="number" data-ci="${ci}" data-di="${di}" data-field="price" value="${it.price}" min="0" step="0.5">
+          <label class="sold-toggle"><input type="checkbox" data-ci="${ci}" data-di="${di}" data-field="soldOut" ${it.soldOut?'checked':''}> Sold out</label>
+          <label class="sold-toggle"><input type="checkbox" data-ci="${ci}" data-di="${di}" data-field="hot" ${it.hot?'checked':''}> 🔥 Hot Seller</label>
+          <button class="icon-btn opts ${isOpen?'active':''}" data-act="toggleOpts" data-dishid="${it.id}">⚙ Options (${groups.length})</button>
+          <button class="icon-btn opts ${isRoutingOpen?'active':''}" data-act="toggleRouting" data-dishid="${it.id}">🖨 Print (${routing.length})</button>
+          <button class="icon-btn del" data-act="delDish" data-ci="${ci}" data-di="${di}">Delete</button>
+        </div>`;
+      if(isRoutingOpen){
+        html += `<div class="options-panel" data-ci="${ci}" data-di="${di}">
+          <div style="font-size:11px;color:var(--cream);margin-bottom:8px;">
+            Leave empty = prints on your default printer only, using the dish name. Add a rule per station to split this dish across stations with custom text (e.g. Kitchen: "Fried Shrimp x2", Sushi Bar: "Shrimp Tempura Roll").
+          </div>`;
+        routing.forEach((r, ri)=>{
+          html += `
+            <div class="option-group-card" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              ${(state.printStations||[]).length ? `
+              <select class="route-station" data-ci="${ci}" data-di="${di}" data-ri="${ri}" style="padding:7px;border-radius:6px;border:1px solid #cbbd94;">
+                ${(state.printStations||[]).map(st=>`<option value="${escapeHtml(st.name)}" ${r.station===st.name?'selected':''}>${escapeHtml(st.name)}</option>`).join('')}
+              </select>` : `<span style="font-size:12px;color:#a94442;">Add a Printer Station above first ↑</span>`}
+              <input type="text" class="route-label" data-ci="${ci}" data-di="${di}" data-ri="${ri}" value="${escapeHtml(r.label||'')}" placeholder="Text to print (blank = dish name)" style="flex:1;min-width:160px;padding:7px;border-radius:6px;border:1px solid #cbbd94;">
+              <button class="icon-btn del" data-act="delRoute" data-ci="${ci}" data-di="${di}" data-ri="${ri}">✕</button>
+            </div>`;
+        });
+        html += `<button class="add-group-btn" data-act="addRoute" data-ci="${ci}" data-di="${di}">+ Add Print Rule</button></div>`;
+      }
+      if(isOpen){
+        html += `<div class="options-panel" data-ci="${ci}" data-di="${di}">`;
+        groups.forEach((g, gi)=>{
+          html += `
+            <div class="option-group-card">
+              <div class="option-group-top">
+                <input type="text" class="og-label" data-ci="${ci}" data-di="${di}" data-gi="${gi}" value="${escapeHtml(g.label)}" placeholder="e.g. Choose your side">
+                <select class="og-type" data-ci="${ci}" data-di="${di}" data-gi="${gi}">
+                  <option value="single" ${g.type==='single'?'selected':''}>Pick 1</option>
+                  <option value="multi" ${g.type==='multi'?'selected':''}>Pick exactly N</option>
+                </select>
+                ${g.type==='multi' ? `<input type="number" class="og-count" data-ci="${ci}" data-di="${di}" data-gi="${gi}" value="${g.count||1}" min="1">` : ''}
+                <button class="icon-btn del" data-act="delGroup" data-ci="${ci}" data-di="${di}" data-gi="${gi}">✕</button>
+              </div>
+              <label>Choices (one per line)</label>
+              <textarea class="og-choices" rows="4" data-ci="${ci}" data-di="${di}" data-gi="${gi}" placeholder="Miso Soup&#10;Salad">${escapeHtml((g.choices||[]).join('\n'))}</textarea>
+            </div>`;
+        });
+        html += `<button class="add-group-btn" data-act="addGroup" data-ci="${ci}" data-di="${di}">+ Add Option Group</button></div>`;
+      }
+    });
+    html += `<button class="add-dish-btn" data-act="addDish" data-ci="${ci}">+ Add Dish to ${sec.cat}</button></div>`;
+  });
+  el.innerHTML = html;
+  bindMenuEvents();
+}
+
+let dragSource = null;
+let catDragSource = null;
+
+function bindMenuEvents(){
+  document.querySelectorAll('.dish-row[draggable]').forEach(row=>{
+    row.addEventListener('dragstart', (e)=>{
+      dragSource = { ci: Number(row.dataset.ci), di: Number(row.dataset.di) };
+      row.classList.add('dragging');
+      if(e.dataTransfer){
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', row.dataset.ci + ':' + row.dataset.di);
+      }
+    });
+    row.addEventListener('dragend', ()=>{
+      row.classList.remove('dragging');
+      document.querySelectorAll('.cat-card.drag-over').forEach(c=>c.classList.remove('drag-over'));
+      dragSource = null;
+    });
+  });
+
+  document.querySelectorAll('.cat-drag-handle').forEach(handle=>{
+    handle.addEventListener('dragstart', (e)=>{
+      catDragSource = Number(handle.dataset.ci);
+      if(e.dataTransfer){
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', 'cat:' + catDragSource);
+      }
+    });
+    handle.addEventListener('dragend', ()=>{
+      document.querySelectorAll('.cat-card.drag-over').forEach(c=>c.classList.remove('drag-over'));
+      catDragSource = null;
+    });
+  });
+
+  document.querySelectorAll('.cat-card').forEach(card=>{
+    card.addEventListener('dragover', (e)=>{
+      if(!dragSource && catDragSource === null) return;
+      e.preventDefault();
+      card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', (e)=>{
+      if(e.target === card) card.classList.remove('drag-over');
+    });
+    card.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      const targetCi = Number(card.dataset.catIndex);
+      if(dragSource){
+        if(targetCi === dragSource.ci){ dragSource = null; return; }
+        const [movedItem] = state.menu[dragSource.ci].items.splice(dragSource.di, 1);
+        state.menu[targetCi].items.push(movedItem);
+        dragSource = null;
+        renderMenu();
+      } else if(catDragSource !== null){
+        if(targetCi === catDragSource){ catDragSource = null; return; }
+        const [movedCat] = state.menu.splice(catDragSource, 1);
+        let insertAt = targetCi;
+        if(catDragSource < targetCi) insertAt -= 1;
+        state.menu.splice(insertAt, 0, movedCat);
+        catDragSource = null;
+        renderMenu();
+      }
+    });
+  });
+
+  document.querySelectorAll('.cat-window-enabled').forEach(cb=>{
+    cb.onchange = ()=>{
+      const ci = cb.dataset.ci;
+      if(!state.menu[ci].orderWindow) state.menu[ci].orderWindow = { enabled:false, start:'11:00', end:'15:00' };
+      state.menu[ci].orderWindow.enabled = cb.checked;
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('.cat-window-start').forEach(inp=>{
+    inp.onchange = ()=>{ state.menu[inp.dataset.ci].orderWindow.start = inp.value; };
+  });
+  document.querySelectorAll('.cat-window-end').forEach(inp=>{
+    inp.onchange = ()=>{ state.menu[inp.dataset.ci].orderWindow.end = inp.value; };
+  });
+  document.querySelectorAll('.cat-name').forEach(inp=>{
+    inp.oninput = ()=>{ state.menu[inp.dataset.ci].cat = inp.value; };
+  });
+  document.querySelectorAll('.dish-row input[type="text"], .dish-row input[type="number"]').forEach(inp=>{
+    inp.oninput = ()=>{
+      const ci = inp.dataset.ci, di = inp.dataset.di, field = inp.dataset.field;
+      const val = field==='price' ? Number(inp.value)||0 : inp.value;
+      state.menu[ci].items[di][field] = val;
+    };
+  });
+  document.querySelectorAll('.dish-row input[type="checkbox"]').forEach(inp=>{
+    inp.onchange = ()=>{
+      const ci = inp.dataset.ci, di = inp.dataset.di, field = inp.dataset.field;
+      state.menu[ci].items[di][field] = inp.checked;
+    };
+  });
+  document.querySelectorAll('[data-act="delDish"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      state.menu[btn.dataset.ci].items.splice(btn.dataset.di,1);
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="moveCatUp"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const ci = Number(btn.dataset.ci);
+      if(ci<=0) return;
+      [state.menu[ci-1], state.menu[ci]] = [state.menu[ci], state.menu[ci-1]];
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="moveCatDown"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const ci = Number(btn.dataset.ci);
+      if(ci>=state.menu.length-1) return;
+      [state.menu[ci+1], state.menu[ci]] = [state.menu[ci], state.menu[ci+1]];
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="moveDishUp"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const ci = Number(btn.dataset.ci), di = Number(btn.dataset.di);
+      const items = state.menu[ci].items;
+      if(di<=0) return;
+      [items[di-1], items[di]] = [items[di], items[di-1]];
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="moveDishDown"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const ci = Number(btn.dataset.ci), di = Number(btn.dataset.di);
+      const items = state.menu[ci].items;
+      if(di>=items.length-1) return;
+      [items[di+1], items[di]] = [items[di], items[di+1]];
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="addDish"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      state.menu[btn.dataset.ci].items.push({id:uid(), name:'New Dish', desc:'', price:0, soldOut:false, hot:false, optionGroups:[], printRouting:[]});
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="delCat"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      if(state.menu.length<=1){ alert('Keep at least one category.'); return; }
+      state.menu.splice(btn.dataset.ci,1);
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="toggleOpts"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const id = btn.dataset.dishid;
+      openOptionsFor[id] = !openOptionsFor[id];
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="toggleRouting"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const id = btn.dataset.dishid;
+      openRoutingFor[id] = !openRoutingFor[id];
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="addRoute"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const ci = btn.dataset.ci, di = btn.dataset.di;
+      const item = state.menu[ci].items[di];
+      if(!Array.isArray(item.printRouting)) item.printRouting = [];
+      const defaultStation = (state.printStations||[])[0];
+      item.printRouting.push({ station: defaultStation ? defaultStation.name : '', label: '' });
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="delRoute"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const ci = btn.dataset.ci, di = btn.dataset.di, ri = btn.dataset.ri;
+      state.menu[ci].items[di].printRouting.splice(ri,1);
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('.route-station').forEach(sel=>{
+    sel.onchange = ()=>{
+      const {ci,di,ri} = sel.dataset;
+      state.menu[ci].items[di].printRouting[ri].station = sel.value;
+    };
+  });
+  document.querySelectorAll('.route-label').forEach(inp=>{
+    inp.oninput = ()=>{
+      const {ci,di,ri} = inp.dataset;
+      state.menu[ci].items[di].printRouting[ri].label = inp.value;
+    };
+  });
+  document.querySelectorAll('[data-act="addGroup"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const ci = btn.dataset.ci, di = btn.dataset.di;
+      const item = state.menu[ci].items[di];
+      if(!Array.isArray(item.optionGroups)) item.optionGroups = [];
+      item.optionGroups.push({ id: gid(), label:'Choose your side', type:'single', count:1, choices:['Miso Soup','Salad'] });
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('[data-act="delGroup"]').forEach(btn=>{
+    btn.onclick = ()=>{
+      const ci = btn.dataset.ci, di = btn.dataset.di, gi = btn.dataset.gi;
+      state.menu[ci].items[di].optionGroups.splice(gi,1);
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('.og-label').forEach(inp=>{
+    inp.oninput = ()=>{
+      const {ci,di,gi} = inp.dataset;
+      state.menu[ci].items[di].optionGroups[gi].label = inp.value;
+    };
+  });
+  document.querySelectorAll('.og-type').forEach(sel=>{
+    sel.onchange = ()=>{
+      const {ci,di,gi} = sel.dataset;
+      state.menu[ci].items[di].optionGroups[gi].type = sel.value;
+      renderMenu();
+    };
+  });
+  document.querySelectorAll('.og-count').forEach(inp=>{
+    inp.oninput = ()=>{
+      const {ci,di,gi} = inp.dataset;
+      state.menu[ci].items[di].optionGroups[gi].count = Math.max(1, Number(inp.value)||1);
+    };
+  });
+  document.querySelectorAll('.og-choices').forEach(ta=>{
+    ta.oninput = ()=>{
+      const {ci,di,gi} = ta.dataset;
+      state.menu[ci].items[di].optionGroups[gi].choices = ta.value.split('\n').map(s=>s.trim()).filter(Boolean);
+    };
+  });
+}
+
+document.getElementById('loadFullMenuBtn').onclick = ()=>{
+  if(!confirm('This will REPLACE your entire current menu with the full 174-item default menu. This cannot be undone once you click Save Changes. Continue?')) return;
+  state.menu = ensureOptionGroups(JSON.parse(JSON.stringify(DEFAULT_MENU)));
+  renderMenu();
+  alert('Full menu loaded. Review it below, then click "Save Changes" at the bottom to make it live.');
+};
+document.getElementById('addCatBtn').onclick = ()=>{
+  state.menu.push({cat:'New Category', items:[], orderWindow:{enabled:false, start:'11:00', end:'15:00'}});
+  renderMenu();
+};
+
+document.getElementById('saveBtn').onclick = async ()=>{
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try{
+    const res = await fetch('/api/config', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(state)
+    });
+    if(!res.ok) throw new Error('save failed');
+    const note = document.getElementById('savedNote');
+    note.classList.add('show');
+    setTimeout(()=>note.classList.remove('show'), 2000);
+  }catch(e){
+    alert('Save failed — please try again.');
+    console.error(e);
+  }
+  btn.disabled = false; btn.textContent = 'Save Changes';
+};
+
+loadConfig();
 </script>
 </body>
 </html>
