@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>点餐系统 · Staff Order</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#23201B;
+    --paper:#F5EFE1;
+    --paper-dark:#EAE1CC;
+    --amber:#DE9F3D;
+    --amber-dark:#B87F27;
+    --herb:#5C7A5C;
+    --ember:#B5432E;
+    --slate:#8B8474;
+    --slate-line:#D8D0BC;
+    --white:#FFFDF8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--ink);
+    color:var(--ink);
+    overflow:hidden;
+  }
+  .app{
+    display:grid;
+    grid-template-columns:96px 1fr 380px;
+    height:100vh;
+  }
+
+  /* ---------- Left rail: categories ---------- */
+  .rail{
+    background:var(--ink);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:20px 0;
+    gap:6px;
+    overflow-y:auto;
+  }
+  .rail-logo{
+    color:var(--amber);
+    font-family:'Fraunces',serif;
+    font-weight:900;
+    font-size:26px;
+    margin-bottom:22px;
+    letter-spacing:-1px;
+  }
+  .cat-btn{
+    width:76px;
+    padding:14px 4px;
+    background:transparent;
+    border:none;
+    border-radius:12px;
+    color:#B8AE96;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .cat-btn .dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.55;}
+  .cat-btn:active{transform:scale(.96);}
+  .cat-btn.active{background:var(--amber); color:var(--ink);}
+  .cat-btn.active .dot{opacity:1;}
+
+  /* ---------- Menu grid ---------- */
+  .menu{
+    background:var(--paper);
+    padding:24px 28px 28px;
+    overflow-y:auto;
+  }
+  .menu-header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .menu-header h1{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:28px;
+    color:var(--ink);
+  }
+  .table-picker{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--slate);
+  }
+  .table-picker input{
+    width:56px;
+    text-align:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:15px;
+    font-weight:600;
+    padding:6px 4px;
+    border:1.5px solid var(--slate-line);
+    border-radius:8px;
+    background:var(--white);
+    color:var(--ink);
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(148px, 1fr));
+    gap:12px;
+  }
+  .item-card{
+    background:var(--white);
+    border:1.5px solid var(--slate-line);
+    border-radius:14px;
+    padding:14px 12px;
+    text-align:left;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    min-height:96px;
+    transition:transform .1s, border-color .15s, box-shadow .15s;
+  }
+  .item-card:active{transform:scale(.97); border-color:var(--amber);}
+  .item-name{
+    font-weight:700;
+    font-size:15px;
+    line-height:1.25;
+    color:var(--ink);
+  }
+  .item-price{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13.5px;
+    color:var(--amber-dark);
+    font-weight:600;
+    margin-top:auto;
+  }
+
+  /* ---------- Order ticket ---------- */
+  .ticket-wrap{
+    background:#DCD3BA;
+    display:flex;
+    flex-direction:column;
+    padding:18px 16px;
+  }
+  .ticket{
+    background:var(--white);
+    border-radius:6px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,.18);
+    position:relative;
+  }
+  .ticket::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0; height:8px;
+    background-image:radial-gradient(circle at 8px 4px, #DCD3BA 4px, transparent 4.5px);
+    background-size:16px 8px;
+    background-repeat:repeat-x;
+  }
+  .ticket-head{
+    padding:20px 18px 12px;
+    border-bottom:1.5px dashed var(--slate-line);
+  }
+  .ticket-head .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:1.5px;
+    color:var(--slate);
+    text-transform:uppercase;
+  }
+  .ticket-head h2{
+    font-family:'Fraunces',serif;
+    font-size:22px;
+    font-weight:700;
+    margin-top:4px;
+  }
+  .ticket-body{
+    flex:1;
+    overflow-y:auto;
+    padding:8px 18px;
+  }
+  .empty-state{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:var(--slate);
+    text-align:center;
+    padding:20px;
+    gap:6px;
+  }
+  .empty-state .big{font-family:'Fraunces',serif; font-size:17px; color:var(--ink); font-weight:600;}
+  .line{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:12px 0;
+    border-bottom:1px solid #EFEAE0;
+  }
+  .line .qty-stepper{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .qty-stepper button{
+    width:24px;height:24px;
+    border-radius:6px;
+    border:1.5px solid var(--slate-line);
+    background:var(--paper);
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .qty-stepper span{width:16px; text-align:center; font-weight:600; font-size:13px;}
+  .line-main{flex:1;}
+  .line-name{font-weight:700; font-size:14px;}
+  .line-note{
+    font-size:12px;
+    color:var(--ember);
+    margin-top:2px;
+    font-style:italic;
+  }
+  .line-price{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--slate);
+    white-space:nowrap;
+  }
+  .line-remove{
+    background:none;border:none;color:var(--slate);
+    font-size:16px; cursor:pointer; padding:2px 4px;
+  }
+  .note-input{
+    width:100%;
+    margin-top:6px;
+    font-size:12px;
+    font-family:'Inter',sans-serif;
+    border:1px solid var(--slate-line);
+    border-radius:6px;
+    padding:5px 7px;
+    background:var(--paper);
+  }
+  .ticket-totals{
+    padding:14px 18px;
+    border-top:1.5px dashed var(--slate-line);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+  }
+  .totals-row{display:flex; justify-content:space-between; padding:3px 0; color:var(--slate);}
+  .totals-row.grand{
+    color:var(--ink);
+    font-weight:700;
+    font-size:16px;
+    padding-top:8px;
+  }
+  .ticket-actions{
+    padding:14px 18px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .btn{
+    border:none;
+    border-radius:10px;
+    padding:14px;
+    font-family:'Inter',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:filter .15s, transform .1s;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn-fire{background:var(--ink); color:var(--paper);}
+  .btn-fire:disabled{background:var(--slate-line); color:var(--slate); cursor:not-allowed;}
+  .btn-pay{background:var(--herb); color:var(--white);}
+  .btn-pay:disabled{background:var(--slate-line); color:var(--slate); cursor:not-allowed;}
+  .btn-print{background:transparent; color:var(--ink); border:1.5px solid var(--slate-line);}
+  .btn-new{background:transparent; color:var(--ember); border:1.5px solid var(--ember);}
+  .status-banner{
+    margin:0 18px 12px;
+    padding:9px 12px;
+    border-radius:8px;
+    font-size:12.5px;
+    font-weight:600;
+    display:none;
+    align-items:center;
+    gap:6px;
+  }
+  .status-banner.show{display:flex;}
+  .status-fired{background:#EFE3C4; color:var(--amber-dark);}
+  .status-paid{background:#E3EBE3; color:var(--herb);}
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(35,32,27,.55);
+    display:none; align-items:center; justify-content:center; z-index:50;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal{
+    background:var(--white);
+    border-radius:16px;
+    padding:28px 26px;
+    width:320px;
+    text-align:center;
+  }
+  .modal h3{font-family:'Fraunces',serif; font-size:20px; margin-bottom:8px;}
+  .modal p{font-size:13.5px; color:var(--slate); margin-bottom:20px; line-height:1.5;}
+  .modal .spinner{
+    width:34px; height:34px; margin:0 auto 16px;
+    border:3px solid var(--slate-line);
+    border-top-color:var(--herb);
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .modal .checkmark{
+    width:48px; height:48px; margin:0 auto 14px;
+    border-radius:50%; background:var(--herb);
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-size:24px;
+  }
+  .modal-close{
+    margin-top:4px;
+    background:var(--ink); color:var(--paper);
+    border:none; border-radius:10px; padding:11px 18px;
+    font-weight:700; font-size:13.5px; cursor:pointer; width:100%;
+  }
+
+  /* ---------- Print ticket (kitchen chit) ---------- */
+  #printTicket{display:none;}
+  @media print{
+    body *{visibility:hidden;}
+    #printTicket, #printTicket *{visibility:visible;}
+    #printTicket{
+      display:block;
+      position:absolute; top:0; left:0; width:280px;
+      font-family:'IBM Plex Mono',monospace;
+      padding:10px;
+    }
+    #printTicket h2{font-size:16px; margin-bottom:6px; text-align:center;}
+    #printTicket .pt-row{display:flex; justify-content:space-between; font-size:12px; margin:3px 0;}
+    #printTicket hr{border:none; border-top:1px dashed #000; margin:8px 0;}
+  }
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--slate-line); border-radius:4px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- LEFT: category rail -->
+  <div class="rail" id="rail">
+    <div class="rail-logo">铺</div>
+  </div>
+
+  <!-- CENTER: menu -->
+  <div class="menu">
+    <div class="menu-header">
+      <h1 id="catTitle">开胃菜 Appetizers</h1>
+      <div class="table-picker">
+        桌号 Table
+        <input type="text" id="tableInput" value="12" inputmode="numeric">
+      </div>
+    </div>
+    <div class="grid" id="menuGrid"></div>
+  </div>
+
+  <!-- RIGHT: order ticket -->
+  <div class="ticket-wrap">
+    <div class="ticket">
+      <div class="ticket-head">
+        <div class="eyebrow" id="ticketNo">ORDER · 待下单</div>
+        <h2>桌 <span id="tableLabel">12</span> 号订单</h2>
+      </div>
+
+      <div class="status-banner" id="statusBanner"></div>
+
+      <div class="ticket-body" id="ticketBody">
+        <div class="empty-state">
+          <div class="big">还没有点菜</div>
+          <div>点击左侧菜单加入订单</div>
+        </div>
+      </div>
+
+      <div class="ticket-totals">
+        <div class="totals-row"><span>小计 Subtotal</span><span id="subtotal">$0.00</span></div>
+        <div class="totals-row"><span>税 Tax (8%)</span><span id="tax">$0.00</span></div>
+        <div class="totals-row grand"><span>总计 Total</span><span id="total">$0.00</span></div>
+      </div>
+
+      <div class="ticket-actions">
+        <button class="btn btn-fire" id="fireBtn" disabled>🔥 送到厨房 Send to Kitchen</button>
+        <button class="btn btn-print" id="printBtn" disabled>🖨️ 打印小票 Print Ticket</button>
+        <button class="btn btn-pay" id="payBtn" disabled>💳 刷卡结账 Charge Card</button>
+        <button class="btn btn-new" id="newBtn" style="display:none;">＋ 新订单 New Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Payment modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<!-- Hidden print-only kitchen ticket -->
+<div id="printTicket">
+  <h2>桌 <span id="pt-table"></span> 号 · 厨房单</h2>
+  <div class="pt-row"><span id="pt-time"></span><span id="pt-order"></span></div>
+  <hr>
+  <div id="pt-items"></div>
+  <hr>
+  <div class="pt-row"><strong>合计 Total</strong><strong id="pt-total"></strong></div>
+</div>
+
+<script>
+const MENU = {
+  "开胃菜 Appetizers": [
+    {name:"Spring Rolls 春卷", price:6.50},
+    {name:"Edamame 毛豆", price:4.50},
+    {name:"Wonton Soup 云吞汤", price:5.90},
+    {name:"Dumplings 饺子 (6pc)", price:8.90},
+    {name:"Crispy Calamari 炸鱿鱼圈", price:9.50},
+  ],
+  "主菜 Mains": [
+    {name:"Kung Pao Chicken 宫保鸡丁", price:14.90},
+    {name:"Beef Chow Fun 干炒牛河", price:15.50},
+    {name:"Mapo Tofu 麻婆豆腐", price:12.90},
+    {name:"Sweet & Sour Pork 咕咾肉", price:14.50},
+    {name:"Fried Rice 炒饭", price:11.90},
+    {name:"General Tso's Chicken 左宗棠鸡", price:14.90},
+    {name:"Peking Duck (Half) 北京烤鸭半只", price:26.00},
+  ],
+  "饮品 Drinks": [
+    {name:"Iced Tea 冰红茶", price:3.50},
+    {name:"Jasmine Tea 茉莉花茶", price:3.00},
+    {name:"Coke 可乐", price:3.00},
+    {name:"Sparkling Water 气泡水", price:3.50},
+    {name:"Fresh Lemonade 鲜榨柠檬水", price:4.50},
+  ],
+  "甜品 Desserts": [
+    {name:"Mango Pudding 芒果布丁", price:5.50},
+    {name:"Red Bean Bun 红豆包", price:4.50},
+    {name:"Sesame Balls 芝麻球", price:5.00},
+  ],
+};
+
+let currentCat = Object.keys(MENU)[0];
+let order = [];        // {id, name, price, qty, note}
+let orderStatus = "open"; // open -> fired -> paid
+let orderCounter = 1024;
+let currentOrderNo = null;
+let idSeq = 0;
+
+const rail = document.getElementById('rail');
+const menuGrid = document.getElementById('menuGrid');
+const catTitle = document.getElementById('catTitle');
+const ticketBody = document.getElementById('ticketBody');
+const subtotalEl = document.getElementById('subtotal');
+const taxEl = document.getElementById('tax');
+const totalEl = document.getElementById('total');
+const fireBtn = document.getElementById('fireBtn');
+const printBtn = document.getElementById('printBtn');
+const payBtn = document.getElementById('payBtn');
+const newBtn = document.getElementById('newBtn');
+const statusBanner = document.getElementById('statusBanner');
+const ticketNo = document.getElementById('ticketNo');
+const tableInput = document.getElementById('tableInput');
+const tableLabel = document.getElementById('tableLabel');
+
+function renderCategories(){
+  rail.querySelectorAll('.cat-btn').forEach(b=>b.remove());
+  Object.keys(MENU).forEach(cat=>{
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (cat===currentCat ? ' active' : '');
+    btn.innerHTML = `<span class="dot"></span><span>${cat.split(' ')[0]}</span>`;
+    btn.onclick = ()=>{ currentCat = cat; renderCategories(); renderMenu(); };
+    rail.appendChild(btn);
+  });
+}
+
+function renderMenu(){
+  catTitle.textContent = currentCat;
+  menuGrid.innerHTML = '';
+  MENU[currentCat].forEach(item=>{
+    const card = document.createElement('button');
+    card.className = 'item-card';
+    card.disabled = orderStatus !== 'open';
+    card.style.opacity = orderStatus !== 'open' ? .5 : 1;
+    card.innerHTML = `<div class="item-name">${item.name}</div><div class="item-price">$${item.price.toFixed(2)}</div>`;
+    card.onclick = ()=> addItem(item);
+    menuGrid.appendChild(card);
+  });
+}
+
+function addItem(item){
+  const existing = order.find(l=>l.name===item.name && !l.note);
+  if(existing){ existing.qty++; }
+  else { order.push({id: idSeq++, name:item.name, price:item.price, qty:1, note:''}); }
+  renderTicket();
+}
+
+function changeQty(id, delta){
+  const line = order.find(l=>l.id===id);
+  if(!line) return;
+  line.qty += delta;
+  if(line.qty<=0) order = order.filter(l=>l.id!==id);
+  renderTicket();
+}
+
+function removeLine(id){
+  order = order.filter(l=>l.id!==id);
+  renderTicket();
+}
+
+function updateNote(id, val){
+  const line = order.find(l=>l.id===id);
+  if(line) line.note = val;
+}
+
+function renderTicket(){
+  tableLabel.textContent = tableInput.value || '--';
+
+  if(order.length===0){
+    ticketBody.innerHTML = `<div class="empty-state"><div class="big">还没有点菜</div><div>点击左侧菜单加入订单</div></div>`;
+  } else {
+    ticketBody.innerHTML = '';
+    order.forEach(line=>{
+      const row = document.createElement('div');
+      row.className = 'line';
+      const locked = orderStatus !== 'open';
+      row.innerHTML = `
+        <div class="qty-stepper">
+          <button ${locked?'disabled':''} onclick="changeQty(${line.id},-1)">－</button>
+          <span>${line.qty}</span>
+          <button ${locked?'disabled':''} onclick="changeQty(${line.id},1)">＋</button>
+        </div>
+        <div class="line-main">
+          <div class="line-name">${line.name}</div>
+          ${line.note ? `<div class="line-note">备注: ${line.note}</div>` : ''}
+          ${!locked ? `<input class="note-input" placeholder="备注 e.g. no onion" value="${line.note}" onchange="updateNote(${line.id}, this.value)">` : ''}
+        </div>
+        <div class="line-price">$${(line.price*line.qty).toFixed(2)}</div>
+        ${!locked ? `<button class="line-remove" onclick="removeLine(${line.id})">✕</button>` : ''}
+      `;
+      ticketBody.appendChild(row);
+    });
+  }
+
+  const subtotal = order.reduce((s,l)=>s+l.price*l.qty,0);
+  const tax = subtotal*0.08;
+  const total = subtotal+tax;
+  subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+  taxEl.textContent = `$${tax.toFixed(2)}`;
+  totalEl.textContent = `$${total.toFixed(2)}`;
+
+  fireBtn.disabled = order.length===0 || orderStatus!=='open';
+  payBtn.disabled = orderStatus!=='fired';
+  printBtn.disabled = orderStatus==='open';
+
+  renderMenu();
+}
+
+fireBtn.onclick = ()=>{
+  if(order.length===0) return;
+  currentOrderNo = orderCounter++;
+  orderStatus = 'fired';
+  ticketNo.textContent = `ORDER #${currentOrderNo} · 已送厨房`;
+  statusBanner.className = 'status-banner show status-fired';
+  statusBanner.textContent = '🔥 订单已发送到厨房,等待制作';
+  newBtn.style.display = 'none';
+  renderTicket();
+};
+
+printBtn.onclick = ()=>{
+  document.getElementById('pt-table').textContent = tableInput.value || '--';
+  document.getElementById('pt-order').textContent = `#${currentOrderNo}`;
+  document.getElementById('pt-time').textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('pt-items').innerHTML = order.map(l=>
+    `<div class="pt-row"><span>${l.qty}x ${l.name}${l.note? ' ('+l.note+')':''}</span><span>$${(l.price*l.qty).toFixed(2)}</span></div>`
+  ).join('');
+  document.getElementById('pt-total').textContent = totalEl.textContent;
+  window.print();
+};
+
+payBtn.onclick = ()=>{
+  const overlay = document.getElementById('modalOverlay');
+  const content = document.getElementById('modalContent');
+  overlay.classList.add('show');
+  content.innerHTML = `
+    <div class="spinner"></div>
+    <h3>请在读卡器上刷卡</h3>
+    <p>Square Terminal 正在等待付款 — Total ${totalEl.textContent}</p>
+  `;
+  // 模拟 Square Terminal API 的 webhook 回调延迟
+  setTimeout(()=>{
+    orderStatus = 'paid';
+    content.innerHTML = `
+      <div class="checkmark">✓</div>
+      <h3>支付成功</h3>
+      <p>已通过 Square Terminal 收款 ${totalEl.textContent}，收据已从设备打印</p>
+      <button class="modal-close" onclick="closeModal()">完成 Done</button>
+    `;
+    statusBanner.className = 'status-banner show status-paid';
+    statusBanner.textContent = '✓ 已支付完成';
+    newBtn.style.display = 'flex';
+    renderTicket();
+  }, 2200);
+};
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+newBtn.onclick = ()=>{
+  order = [];
+  orderStatus = 'open';
+  currentOrderNo = null;
+  ticketNo.textContent = 'ORDER · 待下单';
+  statusBanner.className = 'status-banner';
+  newBtn.style.display = 'none';
+  renderTicket();
+};
+
+tableInput.onchange = ()=> renderTicket();
+
+renderCategories();
+renderTicket();
+</script>
+
+</body>
+</html>
